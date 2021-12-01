@@ -1,4 +1,4 @@
-defmodule Day1Runner do
+defmodule Task2Runner do
   def main do
     case File.read("data.txt") do
       {:ok, contents} -> process(contents)
@@ -8,6 +8,10 @@ defmodule Day1Runner do
   end
 
   def process(contents) do
-    Day1.solution(contents |> String.split("\n", trim: true) |> Enum.map(&String.to_integer/1), 0)
+    Task2.solution(
+      contents |> String.split("\n", trim: true) |> Enum.map(&String.to_integer/1),
+      0,
+      0
+    )
   end
 end

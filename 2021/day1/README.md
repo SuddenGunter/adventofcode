@@ -9,5 +9,6 @@ Put your data into 'data.txt' (in the same directory as this readme file).
 ```sh
 mix
 ies -S mix
-Day1Runner.main()
+Task1Runner.main()
+Task2Runner.main()
 ```
