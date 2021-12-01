@@ -1,5 +1,12 @@
 defmodule Day1Runner do
   def main do
-    IO.puts(Day1.solution([1, 2, 3], 0))
+    case File.read("data.txt") do
+      {:ok, contents} -> process(contents)
+      {:error, reason} -> "failed to read file 'data.txt': #{reason}"
+    end |> IO.puts
+  end
+
+  def process(contents) do
+    Day1.solution(contents |> String.split("\n", trim: true) |> Enum.map(&String.to_integer/1), 0)
   end
 end
