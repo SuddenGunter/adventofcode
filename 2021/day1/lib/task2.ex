@@ -1,4 +1,4 @@
-defmodule Day2 do
+defmodule Task2 do
   def solution(inputs, prevSumOf3, acc) do
     case length(inputs) do
       n when n <= 3 ->

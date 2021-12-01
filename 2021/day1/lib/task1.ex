@@ -1,4 +1,4 @@
-defmodule Day1 do
+defmodule Task1 do
   def solution([first, second | tail], acc) do
     solution(
       [second | tail],
