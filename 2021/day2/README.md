@@ -10,4 +10,5 @@ Put your data into 'data.txt' (in the same directory as this readme file).
 mix
 ies -S mix
 Task1Runner.main()
+Task2Runner.main()
 ```
