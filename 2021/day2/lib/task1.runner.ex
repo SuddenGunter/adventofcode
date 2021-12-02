@@ -9,11 +9,12 @@ defmodule Task1Runner do
 
   def process(contents) do
     Task1.solution(
-      contents |>
-      String.split("\n", trim: true) |>
-      Enum.map(fn line ->
+      contents
+      |> String.split("\n", trim: true)
+      |> Enum.map(fn line ->
         [first, second] = String.split(String.slice(line, 0..-1), " ", trim: true)
-        {String.to_atom(first), String.to_integer(second)} end)
+        {String.to_atom(first), String.to_integer(second)}
+      end)
     )
   end
 end
