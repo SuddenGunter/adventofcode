@@ -7,7 +7,7 @@ defmodule Task1 do
     oneAtEachIndex =
       Enum.reduce(
         inputs,
-        Sh.replicate(String.length(Enum.at(inputs, 1)), 0),
+        replicate(String.length(Enum.at(inputs, 1)), 0),
         fn x, res ->
           Stream.with_index(res, 0)
           |> Enum.map(fn {el, index} ->
