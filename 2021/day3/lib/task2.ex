@@ -18,12 +18,7 @@ defmodule Task2 do
           inputs,
           0,
           fn x, acc ->
-            acc +
-              if String.at(x, bitToCheck) == "1" do
-                1
-              else
-                0
-              end
+            acc + String.to_integer(String.at(x, bitToCheck), 2)
           end
         )
 
