@@ -11,12 +11,7 @@ defmodule Task1 do
         fn x, res ->
           Stream.with_index(res, 0)
           |> Enum.map(fn {el, index} ->
-            el +
-              if String.at(x, index) == "1" do
-                1
-              else
-                0
-              end
+            el + String.to_integer(String.at(x, index), 2)
           end)
         end
       )
