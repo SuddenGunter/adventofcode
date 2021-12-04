@@ -17,3 +17,5 @@ erl_crash.dump
 .elixir_ls/
 
 data.txt
+
+.idea
