@@ -9,6 +9,7 @@ const markedNumber = -1
 func Solve(data input.Data) (int, error) {
 	alreadyWon := make(map[int]struct{})
 	var lastWinner input.Player
+
 	lastWinningNumber := -1
 
 	for _, v := range data.WinningSequence {
