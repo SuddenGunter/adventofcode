@@ -16,6 +16,7 @@ func Solve(data input.Data) (int, error) {
 			won := markNumber(p, v)
 			if won {
 				hasWinner = true
+
 				winners = append(winners, p)
 			}
 		}
@@ -27,11 +28,13 @@ func Solve(data input.Data) (int, error) {
 	}
 
 	maxScore := getBiggestWinner(winners)
+
 	return maxScore * lastWinningNumber, nil
 }
 
 func getBiggestWinner(winners []input.Player) int {
 	maxScore := -1
+
 	for _, w := range winners {
 		score := getScore(w)
 		maxScore = max(maxScore, score)

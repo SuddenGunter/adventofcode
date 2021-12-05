@@ -31,6 +31,7 @@ func ParseInput(name string) (Data, error) {
 	}
 
 	lines := strings.Split(string(file), "\n")
+
 	winningSeq, err := parseIntLine(lines[0], ',')
 	if err != nil {
 		return Data{}, err
