@@ -64,8 +64,7 @@ func moveTowards(from, to input.Position) input.Position {
 		from.X--
 	case -1:
 		from.X++
-	default:
-		// already in the same point
+	default: // already in the same point
 	}
 
 	switch compare(from.Y, to.Y) {
@@ -73,8 +72,7 @@ func moveTowards(from, to input.Position) input.Position {
 		from.Y--
 	case -1:
 		from.Y++
-	default:
-		// already in the same point
+	default: // already in the same point
 	}
 
 	return from
@@ -87,9 +85,9 @@ func compare(a, b int16) int {
 
 	if a > b {
 		return 1
-	} else {
-		return -1
 	}
+
+	return -1
 }
 
 func samePoint(p1, p2 input.Position) bool {
