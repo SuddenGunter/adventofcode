@@ -12,6 +12,7 @@ const (
 
 func Solve(data input.Data) (int, error) {
 	sum := 0
+
 	for _, f := range data.Fishes {
 		res := simulateFishAndDescendants(f, daysToSimulate)
 		sum += res

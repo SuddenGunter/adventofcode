@@ -19,6 +19,7 @@ func Solve(data input.Data) (int64, error) {
 
 	for day := 1; day <= daysToSimulate; day++ {
 		newFishes := fishCounter[0]
+
 		for i := 0; i < len(fishCounter)-1; i++ {
 			fishCounter[i] = fishCounter[i+1]
 		}
