@@ -8,8 +8,7 @@ import (
 )
 
 type Data struct {
-	Fishes         []Fish
-	DaysToSimulate int
+	Fishes []Fish
 }
 
 type Fish struct {
@@ -40,8 +39,6 @@ func ParseInput(name string) (Data, error) {
 
 		data.Fishes = append(data.Fishes, Fish{DaysBeforeBirth: int8(num)})
 	}
-
-	data.DaysToSimulate = 80
 
 	return data, nil
 }

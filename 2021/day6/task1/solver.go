@@ -7,12 +7,13 @@ import (
 const (
 	defaultAfterBirth = 6
 	defaultForNewFish = 8
+	daysToSimulate    = 80
 )
 
 func Solve(data input.Data) (int, error) {
 	sum := 0
 	for _, f := range data.Fishes {
-		res := simulateFishAndDescendants(f, data.DaysToSimulate)
+		res := simulateFishAndDescendants(f, daysToSimulate)
 		sum += res
 	}
 
