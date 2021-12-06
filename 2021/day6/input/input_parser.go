@@ -12,7 +12,7 @@ type Data struct {
 }
 
 type Fish struct {
-	DaysBeforeBirth int8
+	DaysBeforeBirth byte
 }
 
 func ParseInput(name string) (Data, error) {
@@ -37,7 +37,7 @@ func ParseInput(name string) (Data, error) {
 			return Data{}, fmt.Errorf("failed to parse as number '%v': %w", char, err)
 		}
 
-		data.Fishes = append(data.Fishes, Fish{DaysBeforeBirth: int8(num)})
+		data.Fishes = append(data.Fishes, Fish{DaysBeforeBirth: byte(num)})
 	}
 
 	return data, nil

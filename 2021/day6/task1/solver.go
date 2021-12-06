@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	defaultAfterBirth = 6
-	defaultForNewFish = 8
+	defaultAfterBirth = byte(6)
+	defaultForNewFish = byte(8)
 	daysToSimulate    = 80
 )
 
