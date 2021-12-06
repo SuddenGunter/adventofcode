@@ -1,7 +1,6 @@
 package input
 
 import (
-	"aoc-2021-day6/input/age"
 	"fmt"
 	"os"
 	"strconv"
@@ -9,12 +8,12 @@ import (
 )
 
 type Data struct {
-	Fishes []Fish
+	Fishes         []Fish
+	DaysToSimulate int
 }
 
 type Fish struct {
 	DaysBeforeBirth int8
-	Age             age.FishAge
 }
 
 func ParseInput(name string) (Data, error) {
@@ -34,13 +33,15 @@ func ParseInput(name string) (Data, error) {
 			continue
 		}
 
-		num, err := strconv.Atoi(char)
+		num, err := strconv.Atoi(strings.Trim(char, " \n"))
 		if err != nil {
 			return Data{}, fmt.Errorf("failed to parse as number '%v': %w", char, err)
 		}
 
-		data.Fishes = append(data.Fishes, Fish{Age: age.Old, DaysBeforeBirth: int8(num)})
+		data.Fishes = append(data.Fishes, Fish{DaysBeforeBirth: int8(num)})
 	}
+
+	data.DaysToSimulate = 80
 
 	return data, nil
 }
