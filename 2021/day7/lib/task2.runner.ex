@@ -10,8 +10,8 @@ defmodule Task2Runner do
   def process(contents) do
     contents
     |> String.trim_trailing()
-    |> String.split([","], trim: true)
+    |> String.split(",", trim: true)
     |> Enum.map(&String.to_integer/1)
-    |> Task1.solution()
+    |> Task2.solution()
   end
 end
