@@ -2,7 +2,7 @@ defmodule Task1 do
   def solution(inputs) do
     m = median(inputs)
 
-    inputs |> Enum.map(fn x -> x - m end) |> Enum.map(fn x -> abs(x) end) |> Enum.sum()
+    inputs |> Enum.map(fn x -> x - m end) |> Enum.map(fn x -> abs(x) end) |> Enum.sum() |> trunc
   end
 
   def median(list) do
