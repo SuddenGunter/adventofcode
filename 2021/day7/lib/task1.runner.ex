@@ -1,7 +1,7 @@
 defmodule Task1Runner do
   def main do
     case File.read("data.txt") do
-      {:ok, contents} -> process(contents)
+      {:ok, contents} -> contents |> process
       {:error, reason} -> "failed to read file 'data.txt': #{reason}"
     end
     |> IO.puts()
