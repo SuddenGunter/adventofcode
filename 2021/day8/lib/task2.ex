@@ -120,9 +120,11 @@ defmodule Task2 do
     Enum.map(nums, fn x ->
       mapDigit(x, dict)
     end)
-    |> IO.inspect()
-
-    8394
+    |> Enum.reverse()
+    |> Enum.with_index()
+    |> Enum.reduce(0, fn {number, index}, acc ->
+      acc + number * :math.pow(10, index)
+    end) |> trunc
   end
 
   def mapDigit(digit, dict) do
