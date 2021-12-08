@@ -7,7 +7,7 @@ defmodule Task1 do
     String.split(line, " | ")
     |> List.last()
     |> String.split(" ")
-    |>   Enum.reduce(
+    |> Enum.reduce(
       0,
       fn x, acc ->
         case String.length(x) do
