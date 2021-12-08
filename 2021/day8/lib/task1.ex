@@ -1,6 +1,8 @@
 defmodule Task1 do
   def solution(inputs) do
-    Enum.map(inputs, &processLine/1) |> IO.inspect() |> Enum.sum()
+    Enum.filter(inputs, fn x -> String.length(x) > 0 end)
+    |> Enum.map(&processLine/1)
+    |> Enum.sum()
   end
 
   def processLine(line) do

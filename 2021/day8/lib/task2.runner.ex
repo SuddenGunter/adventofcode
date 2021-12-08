@@ -1,4 +1,4 @@
-defmodule Task1Runner do
+defmodule Task2Runner do
   def main do
     case File.read("data.txt") do
       {:ok, contents} -> contents |> process
