@@ -8,49 +8,38 @@ defmodule Task2 do
   end
 
   def processLine(line) do
-    split = String.split(line, " | ")
-    dict = generateDictionary(Enum.at(split, 0))
-
-    mapResult(dict, Enum.at(split, 1))
+    [left, right] = String.split(line, " | ")
+    generateDictionary(left) |> mapResult(right)
   end
 
   def generateDictionary(line) do
     knownByCounting = countLettersFrequency(line)
-    inferredFromOne = oneHeuristic(line, Map.keys(knownByCounting))
-    inferredFromOneAndSeven = oneSevenHeuristic(line)
 
-    inferredFromFour =
-      fourHeuristic(
-        line,
-        Map.keys(
-          Map.merge(knownByCounting, inferredFromOne)
-          |> Map.merge(inferredFromOneAndSeven)
+    words =
+      line
+      |> String.split(" ")
+      |> Enum.sort_by(fn x -> String.length(x) end)
+
+    # can be found by position
+    %{
+      0 => "c",
+      1 => "a",
+      2 => "d",
+      # last
+      (length(words) - 1) => "g"
+    }
+    |> Enum.reduce(
+      knownByCounting,
+      fn {k, v}, acc ->
+        graphemes = words |> Enum.at(k) |> String.graphemes()
+
+        Map.put_new(
+          acc,
+          (graphemes -- Map.keys(acc)) |> Enum.at(0),
+          v
         )
-      )
-
-    eight =
-      eightHeuristic(
-        line,
-        Map.keys(
-          Map.merge(knownByCounting, inferredFromOne)
-          |> Map.merge(inferredFromOneAndSeven)
-          |> Map.merge(inferredFromFour)
-        )
-      )
-
-    Map.merge(knownByCounting, inferredFromOne)
-    |> Map.merge(inferredFromOneAndSeven)
-    |> Map.merge(inferredFromFour)
-    |> Map.merge(eight)
-
-    # %{
-    #   "a" => "a",
-    #   "b" => "b",
-    #   "c" => "c",
-    #   "d" => "d",
-    #   "e" => "e",
-    #   "f" => "f"
-    # }
+      end
+    )
   end
 
   def countLettersFrequency(line) do
@@ -70,106 +59,53 @@ defmodule Task2 do
     )
   end
 
-  def oneHeuristic(line, knownLetters) do
-    numberOne =
-      line
-      |> String.split(" ")
-      |> Enum.sort_by(fn x -> String.length(x) end)
-      |> Enum.at(0)
-      |> String.graphemes()
-
-    %{((numberOne -- knownLetters) |> Enum.at(0)) => "c"}
-  end
-
-  def oneSevenHeuristic(line) do
-    letters =
-      line
-      |> String.split(" ")
-      |> Enum.sort_by(fn x -> String.length(x) end)
-      |> Enum.take(2)
-      |> Enum.map(&String.graphemes/1)
-
-    %{((Enum.at(letters, 1) -- Enum.at(letters, 0)) |> Enum.at(0)) => "a"}
-  end
-
-  def fourHeuristic(line, knownLetters) do
-    numberOne =
-      line
-      |> String.split(" ")
-      |> Enum.sort_by(fn x -> String.length(x) end)
-      |> Enum.at(2)
-      |> String.graphemes()
-
-    %{((numberOne -- knownLetters) |> Enum.at(0)) => "d"}
-  end
-
-  def eightHeuristic(line, knownLetters) do
-    numberOne =
-      line
-      |> String.split(" ")
-      |> Enum.sort_by(fn x -> String.length(x) end)
-      |> List.last()
-      |> String.graphemes()
-
-    %{((numberOne -- knownLetters) |> Enum.at(0)) => "g"}
-  end
-
   def mapResult(dict, right) do
-    nums = String.split(right, " ")
-
-    Enum.map(nums, fn x ->
+    String.split(right, " ")
+    |> Enum.map(fn x ->
       mapDigit(x, dict)
     end)
     |> Enum.reverse()
     |> Enum.with_index()
     |> Enum.reduce(0, fn {number, index}, acc ->
       acc + number * :math.pow(10, index)
-    end) |> trunc
+    end)
+    |> trunc
   end
 
+  @bitShift %{
+    "a" => 0,
+    "b" => 1,
+    "c" => 2,
+    "d" => 3,
+    "e" => 4,
+    "f" => 5,
+    "g" => 6
+  }
+
+  @binaryEncoded %{
+    <<0::1, 1::1, 1::1, 1::1, 1::1, 1::1, 1::1, 1::1>> => 8,
+    <<0::1, 1::1, 1::1, 1::1, 0::1, 1::1, 1::1, 1::1>> => 0,
+    <<0::1, 1::1, 1::1, 1::1, 1::1, 0::1, 1::1, 1::1>> => 6,
+    <<0::1, 1::1, 1::1, 0::1, 1::1, 1::1, 1::1, 1::1>> => 9,
+    <<0::1, 1::1, 1::1, 0::1, 1::1, 0::1, 1::1, 1::1>> => 5,
+    <<0::1, 1::1, 1::1, 0::1, 1::1, 1::1, 0::1, 1::1>> => 3,
+    <<0::1, 1::1, 0::1, 1::1, 1::1, 1::1, 0::1, 1::1>> => 2,
+    <<0::1, 0::1, 1::1, 0::1, 0::1, 1::1, 0::1, 1::1>> => 7,
+    <<0::1, 0::1, 1::1, 0::1, 0::1, 1::1, 0::1, 0::1>> => 1,
+    <<0::1, 0::1, 1::1, 0::1, 1::1, 1::1, 1::1, 0::1>> => 4
+  }
+
   def mapDigit(digit, dict) do
-    bitShift = %{
-      "a" => 0,
-      "b" => 1,
-      "c" => 2,
-      "d" => 3,
-      "e" => 4,
-      "f" => 5,
-      "g" => 6
-    }
-
-    binaryEncoded = %{
-      <<0::1, 1::1, 1::1, 1::1, 1::1, 1::1, 1::1, 1::1>> => 8,
-      <<0::1, 1::1, 1::1, 1::1, 0::1, 1::1, 1::1, 1::1>> => 0,
-      <<0::1, 1::1, 1::1, 1::1, 1::1, 0::1, 1::1, 1::1>> => 6,
-      <<0::1, 1::1, 1::1, 0::1, 1::1, 1::1, 1::1, 1::1>> => 9,
-      <<0::1, 1::1, 1::1, 0::1, 1::1, 0::1, 1::1, 1::1>> => 5,
-      <<0::1, 1::1, 1::1, 0::1, 1::1, 1::1, 0::1, 1::1>> => 3,
-      <<0::1, 1::1, 0::1, 1::1, 1::1, 1::1, 0::1, 1::1>> => 2,
-      <<0::1, 0::1, 1::1, 0::1, 0::1, 1::1, 0::1, 1::1>> => 7,
-      <<0::1, 0::1, 1::1, 0::1, 0::1, 1::1, 0::1, 0::1>> => 1,
-      <<0::1, 0::1, 1::1, 0::1, 1::1, 1::1, 1::1, 0::1>> => 4
-    }
-
-    digit |> IO.inspect(label: "digit")
-    dict |> IO.inspect(label: "dict")
-
-    mapped =
+    key =
       String.graphemes(digit)
       |> Enum.map(fn x -> dict[x] end)
-
-    mapped |> IO.inspect(label: "mapped")
-
-    key =
-      mapped
       |> Enum.reduce(
         0,
         fn x, acc ->
-          acc ||| 1 <<< bitShift[x]
+          acc ||| 1 <<< @bitShift[x]
         end
       )
 
-    key |> IO.inspect(label: "key")
-    binaryEncoded[<<key::8>>] |> IO.inspect(label: "binaryEncoded[key]")
+    @binaryEncoded[<<key::8>>]
   end
 end
