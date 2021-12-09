@@ -1,14 +1,14 @@
 package main
 
 import (
-	"aoc-2021-day5/input"
-	"aoc-2021-day5/task1"
-	"aoc-2021-day5/task2"
+	"aoc-2021-day9/input"
+	"aoc-2021-day9/task1"
+	"aoc-2021-day9/task2"
 	"fmt"
 )
 
 func main() {
-	data, err := input.ParseInput("data.txt")
+	data, err := input.ParseInput("demo.data.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -18,4 +18,5 @@ func main() {
 
 	t2, err := task2.Solve(data)
 	fmt.Printf("task 2 answer: %v, err: %v\n", t2, err)
+
 }
