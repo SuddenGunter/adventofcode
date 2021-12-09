@@ -61,7 +61,7 @@ func minimumsByLine(lines [][]byte) map[position]struct{} {
 					Y: j,
 				}] = struct{}{}
 
-				// if x is local minimum - next element never can be a local mimimum
+				// if x is local minimum - next element never can be a local minimum
 				j++
 			}
 		}

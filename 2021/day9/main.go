@@ -18,5 +18,4 @@ func main() {
 
 	t2, err := task2.Solve(data)
 	fmt.Printf("task 2 answer: %v, err: %v\n", t2, err)
-
 }
