@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	data, err := input.ParseInput("demo.data.txt")
+	data, err := input.ParseInput("data.txt")
 	if err != nil {
 		panic(err)
 	}
