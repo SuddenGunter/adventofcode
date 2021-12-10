@@ -2,6 +2,7 @@ package input
 
 import (
 	"os"
+	"strings"
 )
 
 type Data struct {
@@ -14,26 +15,11 @@ func ParseInput(name string) (Data, error) {
 		return Data{}, err
 	}
 
-	//lines := strings.Split(string(file), "\n")
-
-	// todo: what if line empty? (last line)
+	lines := strings.Split(string(file), "\n")
 
 	data := Data{
-		Lines: nil,
+		Lines: lines[:len(lines)-1],
 	}
-
-	//for i, l := range lines {
-	//	if l == "" {
-	//		continue
-	//	}
-	//
-	//	line, err := parseLine(l)
-	//	if err != nil {
-	//		return Data{}, fmt.Errorf("failed to parse line %v: %w", i, err)
-	//	}
-	//
-	//	data.Lines = append(data.Lines, line)
-	//}
 
 	return data, nil
 }
