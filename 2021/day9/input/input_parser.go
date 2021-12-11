@@ -1,7 +1,6 @@
 package input
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
@@ -21,12 +20,8 @@ func ParseInput(name string) (Data, error) {
 		Numbers: make([][]byte, 0, len(lines)-1),
 	}
 
-	for i, l := range lines[:len(lines)-1] {
+	for _, l := range lines[:len(lines)-1] {
 		line := parseLine(l)
-
-		if err != nil {
-			return Data{}, fmt.Errorf("failed to parse line %v: %w", i, err)
-		}
 
 		data.Numbers = append(data.Numbers, line)
 	}
