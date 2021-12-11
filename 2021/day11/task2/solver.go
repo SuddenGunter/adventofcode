@@ -8,20 +8,16 @@ type position struct {
 	x, y int
 }
 
-func Solve(data input.Data) (int, int, error) {
-	flashes := 0
+func Solve(data input.Data) (int, error) {
 	for i := 0; i < steps; i++ {
-		stepFlashes := simulateStep(data.Octopuses)
-		flashes += stepFlashes
+		stepFlashes := simulateStep(data.OctopusesP2)
 
-		if stepFlashes == len(data.Octopuses[0])*len(data.Octopuses) {
-			return i + 1, flashes, nil
+		if stepFlashes == len(data.OctopusesP2[0])*len(data.OctopusesP2) {
+			return i + 1, nil
 		}
-
-		flashes += stepFlashes
 	}
 
-	return -1, flashes, nil
+	return -1, nil
 }
 
 func simulateStep(octopuses [][]byte) int {

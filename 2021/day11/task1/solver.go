@@ -11,7 +11,7 @@ type position struct {
 func Solve(data input.Data) (int, error) {
 	flashes := 0
 	for i := 0; i < steps; i++ {
-		flashes += simulateStep(data.Octopuses)
+		flashes += simulateStep(data.OctopusesP1)
 	}
 
 	return flashes, nil
