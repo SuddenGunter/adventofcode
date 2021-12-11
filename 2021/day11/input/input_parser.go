@@ -6,7 +6,8 @@ import (
 )
 
 type Data struct {
-	Numbers [][]byte
+	OctopusesP1 [][]byte
+	OctopusesP2 [][]byte
 }
 
 func ParseInput(name string) (Data, error) {
@@ -16,14 +17,23 @@ func ParseInput(name string) (Data, error) {
 	}
 
 	lines := strings.Split(string(file), "\n")
+
 	data := Data{
-		Numbers: make([][]byte, 0, len(lines)-1),
+		OctopusesP1: make([][]byte, 0, len(lines)-1),
+		OctopusesP2: make([][]byte, 0, len(lines)-1),
 	}
 
 	for _, l := range lines[:len(lines)-1] {
-		line := parseLine(l)
+		if l == "" {
+			continue
+		}
 
-		data.Numbers = append(data.Numbers, line)
+		lineP1 := parseLine(l)
+		lineP2 := make([]byte, len(lineP1), len(lineP1))
+		copy(lineP2, lineP1)
+
+		data.OctopusesP1 = append(data.OctopusesP1, lineP1)
+		data.OctopusesP2 = append(data.OctopusesP2, lineP2)
 	}
 
 	return data, nil
