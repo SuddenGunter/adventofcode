@@ -8,17 +8,23 @@ type position struct {
 	x, y int
 }
 
-func Solve(data input.Data) (int, error) {
+func Solve(data input.Data) (int, int, error) {
+	flashes := 0
 	for i := 0; i < steps; i++ {
-		if simulateStep(data.Octopuses) {
-			return i + 1, nil
+		stepFlashes := simulateStep(data.Octopuses)
+		flashes += stepFlashes
+
+		if stepFlashes == len(data.Octopuses[0])*len(data.Octopuses) {
+			return i + 1, flashes, nil
 		}
+
+		flashes += stepFlashes
 	}
 
-	return -1, nil
+	return -1, flashes, nil
 }
 
-func simulateStep(octopuses [][]byte) bool {
+func simulateStep(octopuses [][]byte) int {
 	flashed := make(map[position]struct{})
 
 	shouldFlash := &queue{elements: make([]position, 0)}
@@ -63,11 +69,8 @@ func simulateStep(octopuses [][]byte) bool {
 	for k := range flashed {
 		octopuses[k.x][k.y] = 0
 	}
-	if len(flashed) == len(octopuses)*len(octopuses[0]) {
-		return true
-	}
 
-	return false
+	return len(flashed)
 }
 
 func neighbours(p position, lenX, lenY int) []position {
