@@ -1,0 +1,8 @@
+package task1
+
+import "aoc-2021-day11/input"
+
+func Solve(data input.Data) (int, error) {
+
+	return 0, nil
+}
