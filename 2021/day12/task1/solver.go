@@ -4,7 +4,6 @@ import (
 	"aoc-2021-day12/cave"
 	"aoc-2021-day12/input"
 	"errors"
-	"fmt"
 )
 
 const maxSaneLimit = 10000
@@ -44,7 +43,7 @@ func Solve(data input.Data) (int, error) {
 
 		if entry.followedPath[len(entry.followedPath)-1] == cave.End {
 			pathCount++
-			fmt.Println("finished path", entry.followedPath, entry.visitedSmall)
+			// fmt.Println("finished path", entry.followedPath, entry.visitedSmall)
 			continue
 		}
 
