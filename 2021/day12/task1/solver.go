@@ -4,9 +4,10 @@ import (
 	"aoc-2021-day12/cave"
 	"aoc-2021-day12/input"
 	"errors"
+	"fmt"
 )
 
-const maxSaneLimit = 1000
+const maxSaneLimit = 10000
 
 type pathEntry struct {
 	node cave.Cave
@@ -25,7 +26,9 @@ func Solve(data input.Data) (int, error) {
 	entry := pathEntry{
 		node:         data.Caves[cave.Start],
 		followedPath: []string{cave.Start},
-		visitedSmall: make(map[string]struct{}),
+		visitedSmall: map[string]struct{}{
+			cave.Start: {},
+		},
 	}
 
 	toTraverse.push(entry)
@@ -41,6 +44,7 @@ func Solve(data input.Data) (int, error) {
 
 		if entry.followedPath[len(entry.followedPath)-1] == cave.End {
 			pathCount++
+			fmt.Println("finished path", entry.followedPath, entry.visitedSmall)
 			continue
 		}
 
