@@ -10,7 +10,7 @@ import (
 )
 
 type Data struct {
-	Dots  [][]rune
+	Dots  [][]string
 	Folds []fold.Fold
 }
 
@@ -61,7 +61,7 @@ func parseFolds(lines []string) ([]fold.Fold, error) {
 	return folds, nil
 }
 
-func parseDots(lines []string) ([][]rune, int, error) {
+func parseDots(lines []string) ([][]string, int, error) {
 	points := make([]point, 0, len(lines))
 	line := 0
 	for ; lines[line] != ""; line++ {
@@ -87,15 +87,15 @@ func parseDots(lines []string) ([][]rune, int, error) {
 	maxSizeX := maxX(points) + 1
 	maxSizeY := maxY(points) + 1
 
-	dots := make([][]rune, 0, maxSizeY)
+	dots := make([][]string, 0, maxSizeY)
 	for i := 0; i < maxSizeY; i++ {
-		dots = append(dots, make([]rune, maxSizeX))
+		dots = append(dots, make([]string, maxSizeX))
 		for j := range dots[i] {
-			dots[i][j] = '.'
+			dots[i][j] = "."
 		}
 	}
 	for _, p := range points {
-		dots[p.Y][p.X] = '#'
+		dots[p.Y][p.X] = "#"
 	}
 
 	return dots, line + 1, nil
