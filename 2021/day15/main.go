@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	data, err := graph.ParseInput("data.txt")
+	data, err := graph.ParseInput("demo.data.txt")
 	if err != nil {
 		panic(err)
 	}
