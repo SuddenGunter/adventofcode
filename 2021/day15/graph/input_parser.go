@@ -18,9 +18,21 @@ func ParseInput(name string) (Data, error) {
 
 	lines := strings.Split(string(file), "\n")
 
-	data := Data{
-		Lines: lines[:len(lines)-1],
+	for i := range lines[:len(lines)-1] {
+		numbersInLine := parseLine(lines[i])
+		for j := range numbersInLine {
+
+		}
 	}
 
 	return data, nil
+}
+
+func parseLine(l string) []int {
+	numbers := make([]int, 0, len(l)-1)
+	for _, n := range l {
+		numbers = append(numbers, int(n-'0'))
+	}
+
+	return numbers
 }
