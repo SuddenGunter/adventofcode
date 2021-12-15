@@ -38,5 +38,5 @@ func Solve(data graph.Data) (int, error) {
 
 	}
 
-	return data.Start.Weight + distance[data.Finish.ID], nil
+	return distance[data.Finish.ID], nil
 }
