@@ -7,6 +7,7 @@ import (
 
 type Data struct {
 	Graph  *Graph
+	Start  *Node
 	Finish *Node
 }
 
@@ -19,7 +20,7 @@ func ParseInput(name string) (Data, error) {
 	lines := strings.Split(string(file), "\n")
 
 	g := NewGraph()
-	var finish *Node
+	var start, finish *Node
 
 	for i := range lines[:len(lines)-1] {
 		numbersInLine := parseLine(lines[i])
@@ -35,6 +36,10 @@ func ParseInput(name string) (Data, error) {
 		}
 
 		// last line
+		if i == 0 {
+			start = g.Nodes[Position{X: 0, Y: 0}]
+		}
+		// last line
 		if i == len(lines)-2 {
 			finish = g.Nodes[Position{X: i, Y: len(numbersInLine) - 1}]
 		}
@@ -42,6 +47,7 @@ func ParseInput(name string) (Data, error) {
 
 	return Data{
 		Graph:  g,
+		Start:  start,
 		Finish: finish,
 	}, nil
 }
