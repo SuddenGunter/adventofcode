@@ -1,6 +1,8 @@
 package graph
 
-import "errors"
+import (
+	"fmt"
+)
 
 const maxAdj = 4
 
@@ -25,13 +27,12 @@ func NewGraph() *Graph {
 func (g *Graph) Add(id Position, weight int) (*Graph, error) {
 	_, found := g.Nodes[id]
 	if found {
-		return nil, errors.New("node already exists")
+		return nil, fmt.Errorf("node already exists: %v", id)
 	}
 
 	adj := g.getAllAdjacent(id)
 	node := &Node{
-		ID: id,
-		// todo if adj != nil - create a link back from that node to this!
+		ID:       id,
 		Adjacent: adj,
 		Weight:   weight,
 	}

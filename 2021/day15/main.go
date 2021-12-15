@@ -15,7 +15,7 @@ func main() {
 	//t1, err := task1.Solve(dataT1)
 	//fmt.Printf("task 1 answer: %v, err: %v\n", t1, err)
 
-	dataT2, err := graph.ParseInputForTask2("demo.data.txt")
+	dataT2, err := graph.ParseInputForTask2("data.txt")
 	if err != nil {
 		panic(err)
 	}
