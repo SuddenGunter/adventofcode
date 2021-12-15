@@ -2,12 +2,13 @@ package task2
 
 import (
 	"aoc-2021-day15/graph"
+	"aoc-2021-day15/heap"
 	"math"
 )
 
 func Solve(data graph.Data) (int, error) {
 	known := make(map[graph.Position]struct{})
-	known[data.Start.ID] = struct{}{}
+	h := heap.NewHeap()
 
 	distance := make(map[graph.Position]int)
 	for k := range data.Graph.Nodes {
@@ -15,27 +16,34 @@ func Solve(data graph.Data) (int, error) {
 	}
 
 	distance[data.Start.ID] = 0
+	known[data.Start.ID] = struct{}{}
+	h.Insert(heap.Entity{Node: data.Start, Priority: 0})
 
-	last := data.Start
+	// todo: could optimize and left when finish is found
+	for !h.IsEmpty() {
+		top, err := h.TakeTop()
+		if err != nil {
+			return 0, err
+		}
 
-	for !last.Equals(data.Finish) {
+		last := top.Node
+
 		known[last.ID] = struct{}{}
 
 		for _, w := range last.Adjacent {
+			_, found := known[w.ID]
+			if found {
+				continue
+			}
+
 			if distance[w.ID] > distance[last.ID]+w.Weight {
 				distance[w.ID] = distance[last.ID] + w.Weight
+				h.Insert(heap.Entity{
+					Node:     w,
+					Priority: distance[last.ID] + w.Weight,
+				})
 			}
 		}
-
-		dist := math.MaxInt
-		for k, v := range distance {
-			_, found := known[k]
-			if !found && dist > v {
-				dist = v
-				last = data.Graph.Nodes[k]
-			}
-		}
-
 	}
 
 	return distance[data.Finish.ID], nil
