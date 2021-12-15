@@ -18,14 +18,32 @@ func ParseInput(name string) (Data, error) {
 
 	lines := strings.Split(string(file), "\n")
 
+	g := NewGraph()
+	var finish *Node
+
 	for i := range lines[:len(lines)-1] {
 		numbersInLine := parseLine(lines[i])
 		for j := range numbersInLine {
+			_, err = g.Add(Position{
+				X: i,
+				Y: j,
+			}, numbersInLine[j])
 
+			if err != nil {
+				return Data{}, err
+			}
+		}
+
+		// last line
+		if i == len(lines)-2 {
+			finish = g.Nodes[Position{X: i, Y: len(numbersInLine) - 1}]
 		}
 	}
 
-	return data, nil
+	return Data{
+		Graph:  g,
+		Finish: finish,
+	}, nil
 }
 
 func parseLine(l string) []int {

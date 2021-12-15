@@ -18,6 +18,10 @@ type Graph struct {
 	Nodes map[Position]*Node
 }
 
+func NewGraph() *Graph {
+	return &Graph{map[Position]*Node{}}
+}
+
 func (g *Graph) Add(id Position, weight int) (*Graph, error) {
 	_, found := g.Nodes[id]
 	if found {
@@ -25,41 +29,47 @@ func (g *Graph) Add(id Position, weight int) (*Graph, error) {
 	}
 
 	adj := g.getAllAdjacent(id)
-
-	g.Nodes[id] = &Node{
-		ID:       id,
+	node := &Node{
+		ID: id,
+		// todo if adj != nil - create a link back from that node to this!
 		Adjacent: adj,
 		Weight:   weight,
+	}
+
+	g.Nodes[id] = node
+
+	for _, n := range adj {
+		n.Adjacent = append(n.Adjacent, node)
 	}
 
 	return g, nil
 }
 
 func (g *Graph) getAllAdjacent(id Position) []*Node {
-	appendIfFound := func(dst []*Node, pos Position, all map[Position]*Node) {
+	appendIfFound := func(dst *[]*Node, pos Position, all map[Position]*Node) {
 		node, found := all[pos]
 		if !found {
 			return
 		}
 
-		dst = append(dst, node)
+		*dst = append(*dst, node)
 	}
 
 	nodes := make([]*Node, 0, maxAdj)
 
-	appendIfFound(nodes, Position{
+	appendIfFound(&nodes, Position{
 		X: id.X,
 		Y: id.Y + 1,
 	}, g.Nodes)
-	appendIfFound(nodes, Position{
+	appendIfFound(&nodes, Position{
 		X: id.X,
 		Y: id.Y - 1,
 	}, g.Nodes)
-	appendIfFound(nodes, Position{
+	appendIfFound(&nodes, Position{
 		X: id.X + 1,
 		Y: id.Y,
 	}, g.Nodes)
-	appendIfFound(nodes, Position{
+	appendIfFound(&nodes, Position{
 		X: id.X - 1,
 		Y: id.Y,
 	}, g.Nodes)
