@@ -6,7 +6,8 @@ import (
 )
 
 type Data struct {
-	Lines []string
+	Graph  *Graph
+	Finish *Node
 }
 
 func ParseInput(name string) (Data, error) {
