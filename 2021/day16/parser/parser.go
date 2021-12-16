@@ -33,5 +33,3 @@ func Parse(data string) (*bitvector.BitVector, error) {
 
 	return v, nil
 }
-
-//

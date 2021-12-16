@@ -19,8 +19,13 @@ type Header struct {
 
 type OpPacket struct {
 	Header     Header
-	Len        lentype.ID
+	Len        Len
 	Subpackets []Packet
+}
+
+type Len struct {
+	ID    lentype.ID
+	Value int
 }
 
 type Packet interface{}

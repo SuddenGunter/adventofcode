@@ -2,34 +2,107 @@ package decoder
 
 import (
 	"aoc-2021-day16/packet"
+	"aoc-2021-day16/packet/lentype"
 	"aoc-2021-day16/packet/pkgtype"
+	"errors"
+	"fmt"
 
 	"github.com/dropbox/godropbox/container/bitvector"
 )
 
-func Decode(vector *bitvector.BitVector) packet.Packet {
-	// todo:
-	// 1. check if op -> go to decodeOp
-	// 1.1 foreach subpacket -> check if op -> recursive decodeOp
-	// 2. check if lv -> go to decodeLv
+func Decode(vector *bitvector.BitVector) (packet.Packet, *bitvector.BitVector, error) {
+	h, err := GetHeader(vector)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	h := GetHeader(vector)
 	if pkgtype.IsLiteral(h.TypeID) {
-		return parseLiteral(h, vector)
+		packet := parseLiteral(h, vector)
+		return packet, vector, nil
 	} else {
-		return parseOp(h, vector)
+		packet, err := parseOp(h, vector)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return packet, vector, nil
 	}
 }
 
-func parseOp(h packet.Header, v *bitvector.BitVector) packet.Packet {
-	return nil
+func parseOp(h packet.Header, v *bitvector.BitVector) (packet.Packet, error) {
+	lenType, err := GetLen(v)
+	if err != nil {
+		return nil, err
+	}
+
+	root := packet.OpPacket{
+		Header:     h,
+		Len:        lenType,
+		Subpackets: nil,
+	}
+	subpackets := make([]packet.Packet, 0)
+
+	for {
+		packet, vector, err := Decode(v)
+		if err != nil {
+			if err == ErrCantParseHeaderEOF {
+				break
+			}
+
+			return nil, err
+		} else {
+			v = vector
+			subpackets = append(subpackets, packet)
+		}
+	}
+
+	// todo: do we need to trim zeroes at the end?
+
+	root.Subpackets = subpackets
+
+	return root, nil
+}
+
+func GetLen(v *bitvector.BitVector) (packet.Len, error) {
+	id := getFirstBits(v, 1)
+	deleteFirstBits(v, 1)
+
+	if lentype.IsLenInBits(lentype.ID(id)) {
+		bits := getFirstBits(v, lentype.BitsForLenInBits)
+		deleteFirstBits(v, lentype.BitsForLenInBits)
+
+		return packet.Len{
+			ID:    lentype.ID(id),
+			Value: bits,
+		}, nil
+	}
+
+	if lentype.IsNumOfSubpackets(lentype.ID(id)) {
+		bits := getFirstBits(v, lentype.BitsNumOfSubpackets)
+		deleteFirstBits(v, lentype.BitsNumOfSubpackets)
+
+		return packet.Len{
+			ID:    lentype.ID(id),
+			Value: bits,
+		}, nil
+	}
+
+	return packet.Len{}, fmt.Errorf("invalid lentype.ID: %v", id)
 }
 
 func parseLiteral(h packet.Header, v *bitvector.BitVector) packet.Packet {
-	return nil
+	// todo: parse till end
+	return packet.ValPacket{
+		Header: h,
+		Body:   v,
+	}
 }
 
-func GetHeader(vector *bitvector.BitVector) packet.Header {
+func GetHeader(vector *bitvector.BitVector) (packet.Header, error) {
+	if vector.Length() < 6 {
+		return packet.Header{}, ErrCantParseHeaderEOF
+	}
+
 	version := getFirstBits(vector, 3)
 	deleteFirstBits(vector, 3)
 
@@ -39,11 +112,10 @@ func GetHeader(vector *bitvector.BitVector) packet.Header {
 	return packet.Header{
 		Version: version,
 		TypeID:  pkgtype.ID(typeID),
-	}
+	}, nil
 }
 
 func getFirstBits(vector *bitvector.BitVector, count int) int {
-	// vector.Element(0)<<2 + vector.Element(1)<<1 + vector.Element(2)<<0
 	num := 0
 	for i, shift := 0, count-1; i < count; i++ {
 		num += int(vector.Element(i) << shift)
@@ -57,3 +129,5 @@ func deleteFirstBits(vector *bitvector.BitVector, count int) {
 		vector.Delete(0)
 	}
 }
+
+var ErrCantParseHeaderEOF = errors.New("cant parse header: EOF")
