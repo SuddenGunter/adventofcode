@@ -40,20 +40,22 @@ func parseOp(h packet.Header, v *bitvector.BitVector) (packet.Packet, error) {
 		Len:        lenType,
 		Subpackets: nil,
 	}
-	subpackets := make([]packet.Packet, 0)
 
-	for {
-		packet, vector, err := Decode(v)
+	var subpackets []packet.Packet
+
+	switch {
+	case lentype.IsLenInBits(lenType.ID):
+		subpackets, err = parseWithLenInBits(lenType.Value, v)
 		if err != nil {
-			if err == ErrCantParseHeaderEOF {
-				break
-			}
-
 			return nil, err
-		} else {
-			v = vector
-			subpackets = append(subpackets, packet)
 		}
+	case lentype.IsLenInBits(lenType.ID):
+		subpackets, err = parseWithLenInPackets(lenType.Value, v)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unknown lentype: %v", lenType.ID)
 	}
 
 	// todo: do we need to trim zeroes at the end?
@@ -61,6 +63,50 @@ func parseOp(h packet.Header, v *bitvector.BitVector) (packet.Packet, error) {
 	root.Subpackets = subpackets
 
 	return root, nil
+}
+
+func parseWithLenInPackets(maxReadLen int, v *bitvector.BitVector) ([]packet.Packet, error) {
+	subpackets := make([]packet.Packet, 0)
+	readPackets := 0
+	// todo: what if we read more than allowed
+	for maxReadLen > readPackets {
+		packet, vector, err := Decode(v)
+		if err != nil {
+			return nil, err
+		} else {
+			v = vector
+			subpackets = append(subpackets, packet)
+		}
+
+		readPackets++
+	}
+
+	if maxReadLen < readPackets {
+		return nil, errors.New("read more packets than required, something went wrong")
+	}
+
+	return subpackets, nil
+}
+
+func parseWithLenInBits(maxReadLen int, v *bitvector.BitVector) ([]packet.Packet, error) {
+	subpackets := make([]packet.Packet, 0)
+	beforeReadLen := v.Length()
+	// todo: what if we read more than allowed
+	for maxReadLen > beforeReadLen-v.Length() {
+		packet, vector, err := Decode(v)
+		if err != nil {
+			return nil, err
+		} else {
+			v = vector
+			subpackets = append(subpackets, packet)
+		}
+	}
+
+	if maxReadLen < beforeReadLen-v.Length() {
+		return nil, errors.New("read more bits than required, something went wrong")
+	}
+
+	return subpackets, nil
 }
 
 func GetLen(v *bitvector.BitVector) (packet.Len, error) {
@@ -91,10 +137,23 @@ func GetLen(v *bitvector.BitVector) (packet.Len, error) {
 }
 
 func parseLiteral(h packet.Header, v *bitvector.BitVector) packet.Packet {
-	// todo: parse till end
-	return packet.ValPacket{
+	value := 0
+
+	for bit := 1; bit != 0; {
+		bit = getFirstBits(v, 1)
+		deleteFirstBits(v, 1)
+
+		value = value << 4
+
+		num := getFirstBits(v, 4)
+		deleteFirstBits(v, 4)
+
+		value += num
+	}
+
+	return packet.LVPacket{
 		Header: h,
-		Body:   v,
+		Value:  value,
 	}
 }
 

@@ -16,6 +16,7 @@ func Parse(data string) (*bitvector.BitVector, error) {
 	for _, char := range hexdec {
 		bits := make([]byte, 8)
 		for i := 0; i <= 7; i++ {
+			// todo: remove if
 			if ((char >> (7 - i)) & 1) == 1 {
 				bits[i] = 1
 			} else {

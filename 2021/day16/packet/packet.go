@@ -3,13 +3,11 @@ package packet
 import (
 	"aoc-2021-day16/packet/lentype"
 	"aoc-2021-day16/packet/pkgtype"
-
-	"github.com/dropbox/godropbox/container/bitvector"
 )
 
-type ValPacket struct {
+type LVPacket struct {
+	Value  int
 	Header Header
-	Body   *bitvector.BitVector
 }
 
 type Header struct {
