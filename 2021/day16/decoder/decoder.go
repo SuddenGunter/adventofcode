@@ -175,13 +175,16 @@ func GetHeader(vector *bitvector.BitVector) (packet.Header, error) {
 }
 
 func getFirstBits(vector *bitvector.BitVector, count int) int {
-	num := 0
+	num := int64(0)
 	for i, shift := 0, count-1; i < count; i++ {
-		num += int(vector.Element(i) << shift)
+		num += int64(vector.Element(i) << shift)
+		fmt.Printf("%b", vector.Element(i))
 		shift--
 	}
 
-	return num
+	fmt.Println()
+
+	return int(num)
 }
 func deleteFirstBits(vector *bitvector.BitVector, count int) {
 	for i := 0; i < count; i++ {
