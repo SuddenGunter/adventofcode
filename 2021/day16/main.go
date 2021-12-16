@@ -4,6 +4,7 @@ import (
 	"aoc-2021-day16/task1"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -25,5 +26,5 @@ func getInput() (string, error) {
 		return "", err
 	}
 
-	return string(file), nil
+	return strings.Trim(string(file), "\n "), nil
 }
