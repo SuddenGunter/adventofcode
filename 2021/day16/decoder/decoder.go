@@ -58,8 +58,6 @@ func parseOp(h packet.Header, v *bitvector.BitVector) (packet.Packet, error) {
 		return nil, fmt.Errorf("unknown lentype: %v", lenType.ID)
 	}
 
-	// todo: do we need to trim zeroes at the end?
-
 	root.Subpackets = subpackets
 
 	return root, nil
@@ -68,7 +66,7 @@ func parseOp(h packet.Header, v *bitvector.BitVector) (packet.Packet, error) {
 func parseWithLenInPackets(maxReadLen int, v *bitvector.BitVector) ([]packet.Packet, error) {
 	subpackets := make([]packet.Packet, 0)
 	readPackets := 0
-	// todo: what if we read more than allowed
+
 	for maxReadLen > readPackets {
 		packet, vector, err := Decode(v)
 		if err != nil {
@@ -91,7 +89,7 @@ func parseWithLenInPackets(maxReadLen int, v *bitvector.BitVector) ([]packet.Pac
 func parseWithLenInBits(maxReadLen int, v *bitvector.BitVector) ([]packet.Packet, error) {
 	subpackets := make([]packet.Packet, 0)
 	beforeReadLen := v.Length()
-	// todo: what if we read more than allowed
+
 	for maxReadLen > beforeReadLen-v.Length() {
 		packet, vector, err := Decode(v)
 		if err != nil {
