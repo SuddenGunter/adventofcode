@@ -42,7 +42,7 @@ func TestSolve_Example5(t *testing.T) {
 }
 
 func TestSolve_Example6(t *testing.T) {
-	val, err := Solve("D8005AC2A8F0")
+	val, err := Solve("F600BC2D8F")
 
 	assert.NoError(t, err)
 	assert.Equal(t, 0, val)

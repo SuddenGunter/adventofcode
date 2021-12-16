@@ -183,6 +183,7 @@ func getFirstBits(vector *bitvector.BitVector, count int) int {
 
 	return num
 }
+
 func deleteFirstBits(vector *bitvector.BitVector, count int) {
 	for i := 0; i < count; i++ {
 		vector.Delete(0)
