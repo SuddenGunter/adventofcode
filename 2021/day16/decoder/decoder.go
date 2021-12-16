@@ -13,21 +13,32 @@ func Decode(vector *bitvector.BitVector) packet.Packet {
 	// 1.1 foreach subpacket -> check if op -> recursive decodeOp
 	// 2. check if lv -> go to decodeLv
 
-	packet := getPacket(vector)
-	return packet
+	h := GetHeader(vector)
+	if pkgtype.IsLiteral(h.TypeID) {
+		return parseLiteral(h, vector)
+	} else {
+		return parseOp(h, vector)
+	}
 }
 
-func getPacket(vector *bitvector.BitVector) packet.Packet {
+func parseOp(h packet.Header, v *bitvector.BitVector) packet.Packet {
+	return nil
+}
+
+func parseLiteral(h packet.Header, v *bitvector.BitVector) packet.Packet {
+	return nil
+}
+
+func GetHeader(vector *bitvector.BitVector) packet.Header {
 	version := getFirstBits(vector, 3)
 	deleteFirstBits(vector, 3)
 
 	typeID := getFirstBits(vector, 3)
 	deleteFirstBits(vector, 3)
 
-	return packet.Packet{
+	return packet.Header{
 		Version: version,
 		TypeID:  pkgtype.ID(typeID),
-		Body:    vector,
 	}
 }
 

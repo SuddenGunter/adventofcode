@@ -11,12 +11,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDecoder_ForLiteralValue_DecodesOk(t *testing.T) {
+func TestGetHeader_ForLiteralValue_DecodesOk(t *testing.T) {
 	vector, err := parser.Parse("D2FE28")
 	require.NoError(t, err)
 
-	result := decoder.Decode(vector)
+	result := decoder.GetHeader(vector)
 
 	assert.Equal(t, pkgtype.ID(4), result.TypeID)
 	assert.Equal(t, 6, result.Version)
+}
+
+func TestGetHeader_ForOpValue_DecodesOk(t *testing.T) {
+	vector, err := parser.Parse("38006F45291200")
+	require.NoError(t, err)
+
+	result := decoder.GetHeader(vector)
+
+	assert.Equal(t, pkgtype.ID(6), result.TypeID)
+	assert.Equal(t, 1, result.Version)
 }
