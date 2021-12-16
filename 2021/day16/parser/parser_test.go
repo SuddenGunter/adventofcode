@@ -4,9 +4,8 @@ import (
 	"aoc-2021-day16/parser"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParse_LiteralPacket_InputReturnedAsBitVector(t *testing.T) {
