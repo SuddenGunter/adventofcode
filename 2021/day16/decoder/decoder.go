@@ -49,7 +49,7 @@ func parseOp(h packet.Header, v *bitvector.BitVector) (packet.Packet, error) {
 		if err != nil {
 			return nil, err
 		}
-	case lentype.IsLenInBits(lenType.ID):
+	case lentype.IsNumOfSubpackets(lenType.ID):
 		subpackets, err = parseWithLenInPackets(lenType.Value, v)
 		if err != nil {
 			return nil, err

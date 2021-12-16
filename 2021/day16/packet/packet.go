@@ -10,6 +10,10 @@ type LVPacket struct {
 	Header Header
 }
 
+func (p LVPacket) Version() int {
+	return p.Header.Version
+}
+
 type Header struct {
 	Version int
 	TypeID  pkgtype.ID
@@ -21,9 +25,15 @@ type OpPacket struct {
 	Subpackets []Packet
 }
 
+func (p OpPacket) Version() int {
+	return p.Header.Version
+}
+
 type Len struct {
 	ID    lentype.ID
 	Value int
 }
 
-type Packet interface{}
+type Packet interface {
+	Version() int
+}
