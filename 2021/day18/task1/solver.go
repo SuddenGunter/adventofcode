@@ -292,7 +292,7 @@ func propagateRight(value *tree.ValueNode) {
 
 	next := value.Parent
 	var subtreeToFindLeftest tree.Node
-	for next != nil {
+	for next != nil && subtreeToFindLeftest == nil {
 		asPair, ok := next.(*tree.PairNode)
 		if !ok {
 			// todo err
@@ -323,6 +323,52 @@ func propagateRight(value *tree.ValueNode) {
 	}
 
 	leftmost.Value += value.Value
+}
+
+func propagateLeft(value *tree.ValueNode) {
+	// todo can it work correctrly for interfaces??
+	// todo: what if value parent == nil
+	ancestors := make(map[tree.Node]struct{})
+	ancestors[value.Parent] = struct{}{}
+	ancestors[value] = struct{}{}
+
+	next := value.Parent
+	var subtreeToFindRightest tree.Node
+	for next != nil && subtreeToFindRightest == nil {
+		asPair, ok := next.(*tree.PairNode)
+		if !ok {
+			// todo err
+			panic("panic")
+		}
+
+		if _, found := ancestors[asPair.LeftChild]; found {
+			ancestors[next] = struct{}{}
+			next = next.GetParent()
+			continue
+		}
+
+		subtreeToFindRightest = asPair.LeftChild
+	}
+
+	if subtreeToFindRightest == nil {
+		// we're at root and cannot find other ways to the left. That means we started with the leftest subtree.
+		return
+	}
+
+	rightmost, err := findRightmostVal(subtreeToFindRightest, func(val *tree.ValueNode) bool {
+		return true
+	})
+
+	if err != nil {
+		// todo: handle
+		panic("err")
+	}
+
+	rightmost.Value += value.Value
+}
+
+func findRightmostVal(rightest tree.Node, f func(val *tree.ValueNode) bool) (interface{}, interface{}) {
+
 }
 
 func sum(root, n tree.Node) tree.Node {
