@@ -69,6 +69,9 @@ func ParseNode(l string) (Node, error) {
 		return nil, err
 	}
 
+	leftNode.SetParent(currentNode)
+	rightNode.SetParent(currentNode)
+
 	currentNode.LeftChild = leftNode
 	currentNode.RightChild = rightNode
 

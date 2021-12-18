@@ -20,6 +20,10 @@ func (n *PairNode) GetParent() Node {
 	return n.Parent
 }
 
+func (n *PairNode) SetParent(parent Node) {
+	n.Parent = parent
+}
+
 type ValueNode struct {
 	Parent Node
 
@@ -34,7 +38,12 @@ func (n *ValueNode) GetParent() Node {
 	return n.Parent
 }
 
+func (n *ValueNode) SetParent(parent Node) {
+	n.Parent = parent
+}
+
 type Node interface {
 	GetParent() Node
+	SetParent(n Node)
 	fmt.Stringer
 }
