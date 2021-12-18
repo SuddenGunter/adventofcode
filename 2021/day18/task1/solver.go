@@ -249,14 +249,14 @@ func explode(root tree.Node) (tree.Node, bool, error) {
 	default:
 	}
 
-	//asVal, ok := leftmost.LeftChild.(*tree.ValueNode)
-	//if !ok {
-	//	return nil, false, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(leftmost.Parent))
-	//}
-	//
-	//leftNum := asVal.Value
-	//
-	asVal, ok := leftmost.RightChild.(*tree.ValueNode)
+	asVal, ok := leftmost.LeftChild.(*tree.ValueNode)
+	if !ok {
+		return nil, false, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(leftmost.Parent))
+	}
+
+	propagateLeft(asVal)
+
+	asVal, ok = leftmost.RightChild.(*tree.ValueNode)
 	if !ok {
 		return nil, false, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(leftmost.Parent))
 	}
@@ -367,8 +367,69 @@ func propagateLeft(value *tree.ValueNode) {
 	rightmost.Value += value.Value
 }
 
-func findRightmostVal(rightest tree.Node, f func(val *tree.ValueNode) bool) (interface{}, interface{}) {
+func findRightmostVal(root tree.Node, fn filterVal) (*tree.ValueNode, error) {
+	if asVal, ok := root.(*tree.ValueNode); ok {
+		found := fn(asVal)
+		if found {
+			return asVal, nil
+		}
 
+		return nil, errNotFound
+	}
+
+	s := stack{data: make([]stackEntry, 0)}
+	s.push(stackEntry{
+		node: root,
+	})
+
+	results := stack{data: make([]stackEntry, 0)}
+
+	for !s.isEmpty() {
+		entry := s.pop()
+
+		if asVal, ok := entry.node.(*tree.ValueNode); ok {
+			found := fn(asVal)
+			if found {
+				results.push(stackEntry{
+					node:  asVal,
+					depth: entry.depth,
+				})
+			}
+
+			continue
+		}
+
+		asPair, ok := entry.node.(*tree.PairNode)
+		if !ok {
+			return nil, errors.New("unknown node type")
+		}
+
+		// todo: only diff in here - switched these if statements places
+		if asPair.RightChild != nil {
+			s.push(stackEntry{
+				node:  asPair.RightChild,
+				depth: entry.depth + 1,
+			})
+		}
+		if asPair.LeftChild != nil {
+			s.push(stackEntry{
+				node:  asPair.LeftChild,
+				depth: entry.depth + 1,
+			})
+		}
+	}
+
+	if !results.isEmpty() {
+		res := results.pop()
+		asVal, ok := res.node.(*tree.ValueNode)
+		if !ok {
+			return nil, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(res))
+		}
+
+		return asVal, nil
+	}
+
+	return nil, errNotFound
 }
 
 func sum(root, n tree.Node) tree.Node {
