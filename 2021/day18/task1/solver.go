@@ -30,7 +30,7 @@ func Solve(data input.Data) (int, tree.Node, error) {
 		}
 	}
 
-	return 0, root, nil
+	return magnitude(root), root, nil
 }
 
 func reduce(root tree.Node) (tree.Node, bool, error) {
@@ -443,6 +443,25 @@ func sum(root, n tree.Node) tree.Node {
 	n.SetParent(newRoot)
 
 	return newRoot
+}
+
+func magnitude(root tree.Node) int {
+	asVal, ok := root.(*tree.ValueNode)
+	if ok {
+		return asVal.Value
+	}
+
+	asPair, ok := root.(*tree.PairNode)
+	if !ok {
+		// todo: err
+		panic("UNKNOWN TYPE")
+	}
+
+	res := 3*magnitude(asPair.LeftChild) + 2*magnitude(asPair.RightChild)
+
+	fmt.Println("returning res for", res, root.String())
+
+	return res
 }
 
 var errNotFound = errors.New("not found")

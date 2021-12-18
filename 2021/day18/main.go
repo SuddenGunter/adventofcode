@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	data, err := input.ParseInput("demo.data.txt")
+	data, err := input.ParseInput("data.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -21,6 +21,6 @@ func main() {
 	t1, _, err := task1.Solve(data)
 	fmt.Printf("task 1 answer: %v, err: %v\n", t1, err)
 
-	t2, err := task2.Solve(data)
+	t2, _, err := task2.Solve(data)
 	fmt.Printf("task 2 answer: %v, err: %v\n", t2, err)
 }

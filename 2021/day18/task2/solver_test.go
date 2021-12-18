@@ -1,4 +1,4 @@
-package task1
+package task2
 
 import (
 	"aoc-2021-day18/input"
