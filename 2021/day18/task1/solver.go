@@ -58,7 +58,7 @@ func reduce(root tree.Node) (tree.Node, bool, error) {
 }
 
 func split(root tree.Node) (tree.Node, bool, error) {
-	leftmost, err := findLeftmost(root, func(val *tree.ValueNode) bool {
+	leftmost, err := findLeftmostVal(root, func(val *tree.ValueNode) bool {
 		return val.Value >= 10
 	})
 
@@ -101,11 +101,16 @@ func split(root tree.Node) (tree.Node, bool, error) {
 	return root, true, nil
 }
 
-type filter func(val *tree.ValueNode) bool
+type filterVal func(val *tree.ValueNode) bool
 
-func findLeftmost(root tree.Node, fn filter) (*tree.ValueNode, error) {
+func findLeftmostVal(root tree.Node, fn filterVal) (*tree.ValueNode, error) {
 	if asVal, ok := root.(*tree.ValueNode); ok {
-		return asVal, nil
+		found := fn(asVal)
+		if found {
+			return asVal, nil
+		}
+
+		return nil, errNotFound
 	}
 
 	s := stack{data: make([]tree.Node, 0)}
@@ -146,6 +151,71 @@ func findLeftmost(root tree.Node, fn filter) (*tree.ValueNode, error) {
 		}
 
 		return asVal, nil
+	}
+
+	return nil, errNotFound
+}
+
+type filterPair func(val *tree.PairNode, depth int) bool
+
+func findLeftmostPair(root tree.Node, fn filterPair) (*tree.PairNode, error) {
+	if _, ok := root.(*tree.ValueNode); ok {
+		return nil, errNotFound
+	}
+
+	s := stack{data: make([]stackEntry, 0)}
+	s.push(stackEntry{
+		node:  root,
+		depth: 0,
+	})
+
+	results := stack{data: make([]stackEntry, 0)}
+
+	for !s.isEmpty() {
+		entry := s.pop()
+
+		if _, ok := entry.node.(*tree.ValueNode); ok {
+			continue
+		}
+
+		asPair, ok := entry.node.(*tree.PairNode)
+
+		if !ok {
+			return nil, errors.New("unknown node type")
+		}
+
+		found := fn(asPair, entry.depth)
+		if found {
+			results.push(stackEntry{
+				node:  asPair,
+				depth: entry.depth,
+			})
+		}
+
+		if asPair.LeftChild != nil {
+			s.push(stackEntry{
+				node:  asPair.LeftChild,
+				depth: entry.depth + 1,
+			})
+		}
+
+		if asPair.RightChild != nil {
+			s.push(stackEntry{
+				node:  asPair.RightChild,
+				depth: entry.depth + 1,
+			})
+		}
+	}
+
+	if !results.isEmpty() {
+		res := results.pop()
+
+		asPair, ok := res.node.(*tree.PairNode)
+		if !ok {
+			return nil, fmt.Errorf("expected *tree.PairNode, received: %v", reflect.TypeOf(res))
+		}
+
+		return asPair, nil
 	}
 
 	return nil, errNotFound
