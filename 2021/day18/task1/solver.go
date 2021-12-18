@@ -44,6 +44,9 @@ func reduce(root tree.Node) (tree.Node, bool) {
 }
 
 func split(root tree.Node) (tree.Node, bool) {
+	// todo:
+	// 1. find the leftest number above 9 using reverse tree traversal
+	// 2. replace that value node with pair node
 	return nil, false
 }
 
