@@ -38,7 +38,11 @@ func reduce(root tree.Node) (tree.Node, bool, error) {
 	var err error
 
 	for {
-		root, exploded = explode(root)
+		root, exploded, err = explode(root)
+		if err != nil {
+			return nil, false, err
+		}
+
 		if exploded {
 			reduced = true
 			continue
@@ -89,7 +93,7 @@ func split(root tree.Node) (tree.Node, bool, error) {
 
 	asPair, ok := leftmost.Parent.(*tree.PairNode)
 	if !ok {
-		return nil, false, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(leftmost.Parent))
+		return nil, false, fmt.Errorf("expected *tree.PairNode, received: %v", reflect.TypeOf(leftmost.Parent))
 	}
 
 	if asPair.LeftChild == leftmost {
@@ -232,16 +236,106 @@ func findLeftmostPair(root tree.Node, fn filterPair) (*tree.PairNode, error) {
 	return nil, errNotFound
 }
 
-func explode(root tree.Node) (tree.Node, bool) {
-	return root, false
+func explode(root tree.Node) (tree.Node, bool, error) {
+	leftmost, err := findLeftmostPair(root, func(val *tree.PairNode, depth int) bool {
+		return depth >= 4
+	})
+
+	switch {
+	case errors.Is(err, errNotFound):
+		return root, false, nil
+	case !errors.Is(err, nil):
+		return nil, false, err
+	default:
+	}
+
+	//asVal, ok := leftmost.LeftChild.(*tree.ValueNode)
+	//if !ok {
+	//	return nil, false, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(leftmost.Parent))
+	//}
+	//
+	//leftNum := asVal.Value
+	//
+	asVal, ok := leftmost.RightChild.(*tree.ValueNode)
+	if !ok {
+		return nil, false, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(leftmost.Parent))
+	}
+
+	propagateRight(asVal)
+	// todo: move left num left and right num right
+
+	replacement := &tree.ValueNode{
+		Parent: leftmost.Parent,
+		Value:  0,
+	}
+
+	asPair, ok := leftmost.Parent.(*tree.PairNode)
+	if !ok {
+		return nil, false, fmt.Errorf("expected *tree.PairNode, received: %v", reflect.TypeOf(leftmost.Parent))
+	}
+
+	if asPair.LeftChild == leftmost {
+		asPair.LeftChild = replacement
+	} else {
+		asPair.RightChild = replacement
+	}
+
+	return root, true, nil
+}
+
+func propagateRight(value *tree.ValueNode) {
+	// todo can it work correctrly for interfaces??
+	// todo: what if value parent == nil
+	ancestors := make(map[tree.Node]struct{})
+	ancestors[value.Parent] = struct{}{}
+	ancestors[value] = struct{}{}
+
+	next := value.Parent
+	var subtreeToFindLeftest tree.Node
+	for next != nil {
+		asPair, ok := next.(*tree.PairNode)
+		if !ok {
+			// todo err
+			panic("panic")
+		}
+
+		if _, found := ancestors[asPair.RightChild]; found {
+			ancestors[next] = struct{}{}
+			next = next.GetParent()
+			continue
+		}
+
+		subtreeToFindLeftest = asPair.RightChild
+	}
+
+	if subtreeToFindLeftest == nil {
+		// we're at root and cannot find other ways to the right. That means we started with the rightest subtree.
+		return
+	}
+
+	leftmost, err := findLeftmostVal(subtreeToFindLeftest, func(val *tree.ValueNode) bool {
+		return true
+	})
+
+	if err != nil {
+		// todo: handle
+		panic("err")
+	}
+
+	leftmost.Value += value.Value
 }
 
 func sum(root, n tree.Node) tree.Node {
-	return &tree.PairNode{
+	newRoot := &tree.PairNode{
 		Parent:     nil,
 		LeftChild:  root,
 		RightChild: n,
 	}
+
+	root.SetParent(newRoot)
+	n.SetParent(newRoot)
+
+	return newRoot
 }
 
 var errNotFound = errors.New("not found")
