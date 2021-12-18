@@ -18,7 +18,7 @@ func main() {
 		fmt.Println(v)
 	}
 
-	t1, err := task1.Solve(data)
+	t1, _, err := task1.Solve(data)
 	fmt.Printf("task 1 answer: %v, err: %v\n", t1, err)
 
 	t2, err := task2.Solve(data)
