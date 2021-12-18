@@ -113,39 +113,50 @@ func findLeftmostVal(root tree.Node, fn filterVal) (*tree.ValueNode, error) {
 		return nil, errNotFound
 	}
 
-	s := stack{data: make([]tree.Node, 0)}
-	s.push(root)
+	s := stack{data: make([]stackEntry, 0)}
+	s.push(stackEntry{
+		node: root,
+	})
 
-	results := stack{data: make([]tree.Node, 0)}
+	results := stack{data: make([]stackEntry, 0)}
 
 	for !s.isEmpty() {
-		node := s.pop()
+		entry := s.pop()
 
-		if asVal, ok := node.(*tree.ValueNode); ok {
+		if asVal, ok := entry.node.(*tree.ValueNode); ok {
 			found := fn(asVal)
 			if found {
-				results.push(asVal)
+				results.push(stackEntry{
+					node:  asVal,
+					depth: entry.depth,
+				})
 			}
 
 			continue
 		}
 
-		asPair, ok := node.(*tree.PairNode)
+		asPair, ok := entry.node.(*tree.PairNode)
 		if !ok {
 			return nil, errors.New("unknown node type")
 		}
 
 		if asPair.LeftChild != nil {
-			s.push(asPair.LeftChild)
+			s.push(stackEntry{
+				node:  asPair.LeftChild,
+				depth: entry.depth + 1,
+			})
 		}
 		if asPair.RightChild != nil {
-			s.push(asPair.RightChild)
+			s.push(stackEntry{
+				node:  asPair.RightChild,
+				depth: entry.depth + 1,
+			})
 		}
 	}
 
 	if !results.isEmpty() {
 		res := results.pop()
-		asVal, ok := res.(*tree.ValueNode)
+		asVal, ok := res.node.(*tree.ValueNode)
 		if !ok {
 			return nil, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(res))
 		}
