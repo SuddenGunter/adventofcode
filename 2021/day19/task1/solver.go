@@ -5,7 +5,7 @@ import (
 	"aoc-2021-day19/point"
 )
 
-func Solve(data input.Data) (int, error) {
+func Solve(data input.Data) (int, map[point.Point3d]struct{}, error) {
 	baseSector := data.Scanners[0]
 
 	foundScanners := make(map[point.Point3d]struct{})
@@ -32,7 +32,7 @@ func Solve(data input.Data) (int, error) {
 		}
 	}
 
-	return len(baseSector), nil
+	return len(baseSector), foundScanners, nil
 }
 
 func findTransformIfIntersects(left, right map[point.Point3d]struct{}) (point.Transform, bool) {
