@@ -5,32 +5,57 @@ import (
 	"aoc-2021-day18/tree"
 	"errors"
 	"fmt"
+	"math"
 	"reflect"
 )
 
-func Solve(data input.Data) (int, tree.Node, error) {
-	root := data.Numbers[0]
-	for _, n := range data.Numbers[1:] {
-		fmt.Printf("%v + %v = ", root, n)
+func Solve(file string) (int, tree.Node, error) {
+	maxMagnitude := math.MinInt
 
-		root = sum(root, n)
-		fmt.Printf("%v\n", root)
+	data, err := input.ParseInput(file)
+	if err != nil {
+		// todo: fix this mess
+		panic(err)
+	}
 
-		res, reduced, err := reduce(root)
+	for i := 0; i < len(data.Numbers); i++ {
+		data, err = input.ParseInput(file)
 		if err != nil {
-			return 0, nil, err
+			// todo: fix this mess
+			panic(err)
 		}
 
-		root = res
+		for j := 0; j < len(data.Numbers); j++ {
+			if i == j {
+				continue
+			}
 
-		if !reduced {
-			fmt.Println("reduce not required")
-		} else {
-			fmt.Println("reduced to: ", root.String())
+			magn, _, err := calculate(data.Numbers[i], data.Numbers[j])
+			if err != nil {
+				// todo: fix
+				panic(err)
+			}
+
+			if magn > maxMagnitude {
+				maxMagnitude = magn
+			}
 		}
 	}
 
-	return magnitude(root), root, nil
+	return maxMagnitude, nil, nil
+}
+
+func calculate(first, second tree.Node) (int, tree.Node, error) {
+	first = sum(first, second)
+
+	res, _, err := reduce(first)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	first = res
+
+	return magnitude(first), first, nil
 }
 
 func reduce(root tree.Node) (tree.Node, bool, error) {
@@ -458,8 +483,6 @@ func magnitude(root tree.Node) int {
 	}
 
 	res := 3*magnitude(asPair.LeftChild) + 2*magnitude(asPair.RightChild)
-
-	fmt.Println("returning res for", res, root.String())
 
 	return res
 }
