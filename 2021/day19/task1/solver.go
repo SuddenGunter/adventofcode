@@ -35,7 +35,7 @@ func Solve(data input.Data) (int, error) {
 	return len(baseSector), nil
 }
 
-func findTransformIfIntersects(left map[point.Point3d]struct{}, right map[point.Point3d]struct{}) (point.Transform, bool) {
+func findTransformIfIntersects(left, right map[point.Point3d]struct{}) (point.Transform, bool) {
 	for face := 0; face <= 5; face++ {
 		for rotation := 0; rotation <= 3; rotation++ {
 			rightReoriented, err := orient(right, face, rotation)
@@ -64,7 +64,7 @@ func findTransformIfIntersects(left map[point.Point3d]struct{}, right map[point.
 	return point.Transform{}, false
 }
 
-func intersectCount(moved map[point.Point3d]struct{}, left map[point.Point3d]struct{}) int {
+func intersectCount(moved, left map[point.Point3d]struct{}) int {
 	intersectCounter := 0
 	for k := range moved {
 		if _, found := left[k]; found {
@@ -85,7 +85,7 @@ func move(nodes map[point.Point3d]struct{}, diff point.Point3d) map[point.Point3
 	return result
 }
 
-func orient(nodes map[point.Point3d]struct{}, face int, rotation int) (map[point.Point3d]struct{}, error) {
+func orient(nodes map[point.Point3d]struct{}, face, rotation int) (map[point.Point3d]struct{}, error) {
 	result := make(map[point.Point3d]struct{})
 
 	for k := range nodes {

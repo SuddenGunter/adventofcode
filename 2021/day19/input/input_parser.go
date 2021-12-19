@@ -44,6 +44,10 @@ func ParseInput(name string) (Data, error) {
 		scanner[p] = struct{}{}
 	}
 
+	if scanner != nil {
+		scanners = append(scanners, scanner)
+	}
+
 	return Data{
 		Scanners: scanners,
 	}, nil
