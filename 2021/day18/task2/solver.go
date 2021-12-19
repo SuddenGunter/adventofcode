@@ -39,6 +39,29 @@ func Solve(file string) (int, tree.Node, error) {
 			if magn > maxMagnitude {
 				maxMagnitude = magn
 			}
+
+			data, err = input.ParseInput(file)
+			if err != nil {
+				// todo: fix this mess
+				panic(err)
+			}
+
+			magn, _, err = calculate(data.Numbers[j], data.Numbers[i])
+			if err != nil {
+				// todo: fix
+				panic(err)
+			}
+
+			if magn > maxMagnitude {
+				maxMagnitude = magn
+			}
+
+			data, err = input.ParseInput(file)
+			if err != nil {
+				// todo: fix this mess
+				panic(err)
+			}
+
 		}
 	}
 
