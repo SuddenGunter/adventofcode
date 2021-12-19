@@ -30,7 +30,12 @@ func Solve(data input.Data) (int, tree.Node, error) {
 		}
 	}
 
-	return magnitude(root), root, nil
+	magn, err := magnitude(root)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return magn, root, nil
 }
 
 func reduce(root tree.Node) (tree.Node, bool, error) {
@@ -254,15 +259,20 @@ func explode(root tree.Node) (tree.Node, bool, error) {
 		return nil, false, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(leftmost.Parent))
 	}
 
-	propagateLeft(asVal)
+	err = propagateLeft(asVal)
+	if err != nil && !errors.Is(err, errNotFound) {
+		return nil, false, err
+	}
 
 	asVal, ok = leftmost.RightChild.(*tree.ValueNode)
 	if !ok {
 		return nil, false, fmt.Errorf("expected *tree.ValueNode, received: %v", reflect.TypeOf(leftmost.Parent))
 	}
 
-	propagateRight(asVal)
-	// todo: move left num left and right num right
+	err = propagateRight(asVal)
+	if err != nil && !errors.Is(err, errNotFound) {
+		return nil, false, err
+	}
 
 	replacement := &tree.ValueNode{
 		Parent: leftmost.Parent,
@@ -283,9 +293,7 @@ func explode(root tree.Node) (tree.Node, bool, error) {
 	return root, true, nil
 }
 
-func propagateRight(value *tree.ValueNode) {
-	// todo can it work correctrly for interfaces??
-	// todo: what if value parent == nil
+func propagateRight(value *tree.ValueNode) error {
 	ancestors := make(map[tree.Node]struct{})
 	ancestors[value.Parent] = struct{}{}
 	ancestors[value] = struct{}{}
@@ -295,8 +303,7 @@ func propagateRight(value *tree.ValueNode) {
 	for next != nil && subtreeToFindLeftest == nil {
 		asPair, ok := next.(*tree.PairNode)
 		if !ok {
-			// todo err
-			panic("panic")
+			return fmt.Errorf("expected *tree.PairNode, received: %v", reflect.TypeOf(next))
 		}
 
 		if _, found := ancestors[asPair.RightChild]; found {
@@ -310,24 +317,21 @@ func propagateRight(value *tree.ValueNode) {
 
 	if subtreeToFindLeftest == nil {
 		// we're at root and cannot find other ways to the right. That means we started with the rightest subtree.
-		return
+		return nil
 	}
 
 	leftmost, err := findLeftmostVal(subtreeToFindLeftest, func(val *tree.ValueNode) bool {
 		return true
 	})
-
 	if err != nil {
-		// todo: handle
-		panic("err")
+		return err
 	}
 
 	leftmost.Value += value.Value
+	return nil
 }
 
-func propagateLeft(value *tree.ValueNode) {
-	// todo can it work correctrly for interfaces??
-	// todo: what if value parent == nil
+func propagateLeft(value *tree.ValueNode) error {
 	ancestors := make(map[tree.Node]struct{})
 	ancestors[value.Parent] = struct{}{}
 	ancestors[value] = struct{}{}
@@ -337,8 +341,7 @@ func propagateLeft(value *tree.ValueNode) {
 	for next != nil && subtreeToFindRightest == nil {
 		asPair, ok := next.(*tree.PairNode)
 		if !ok {
-			// todo err
-			panic("panic")
+			return fmt.Errorf("expected *tree.PairNode, received: %v", reflect.TypeOf(next))
 		}
 
 		if _, found := ancestors[asPair.LeftChild]; found {
@@ -352,19 +355,19 @@ func propagateLeft(value *tree.ValueNode) {
 
 	if subtreeToFindRightest == nil {
 		// we're at root and cannot find other ways to the left. That means we started with the leftest subtree.
-		return
+		return nil
 	}
 
 	rightmost, err := findRightmostVal(subtreeToFindRightest, func(val *tree.ValueNode) bool {
 		return true
 	})
-
 	if err != nil {
-		// todo: handle
-		panic("err")
+		return err
 	}
 
 	rightmost.Value += value.Value
+
+	return nil
 }
 
 func findRightmostVal(root tree.Node, fn filterVal) (*tree.ValueNode, error) {
@@ -404,7 +407,6 @@ func findRightmostVal(root tree.Node, fn filterVal) (*tree.ValueNode, error) {
 			return nil, errors.New("unknown node type")
 		}
 
-		// todo: only diff in here - switched these if statements places
 		if asPair.RightChild != nil {
 			s.push(stackEntry{
 				node:  asPair.RightChild,
@@ -445,23 +447,28 @@ func sum(root, n tree.Node) tree.Node {
 	return newRoot
 }
 
-func magnitude(root tree.Node) int {
+func magnitude(root tree.Node) (int, error) {
 	asVal, ok := root.(*tree.ValueNode)
 	if ok {
-		return asVal.Value
+		return asVal.Value, nil
 	}
 
 	asPair, ok := root.(*tree.PairNode)
 	if !ok {
-		// todo: err
-		panic("UNKNOWN TYPE")
+		return 0, fmt.Errorf("expected *tree.PairNode, received: %v", reflect.TypeOf(root))
 	}
 
-	res := 3*magnitude(asPair.LeftChild) + 2*magnitude(asPair.RightChild)
+	leftRes, err := magnitude(asPair.LeftChild)
+	if err != nil {
+		return 0, err
+	}
 
-	fmt.Println("returning res for", res, root.String())
+	rightRes, err := magnitude(asPair.RightChild)
+	if err != nil {
+		return 0, err
+	}
 
-	return res
+	return 3*leftRes + 2*rightRes, nil
 }
 
 var errNotFound = errors.New("not found")

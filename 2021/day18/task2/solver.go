@@ -364,7 +364,6 @@ func propagateRight(value *tree.ValueNode) {
 	leftmost, err := findLeftmostVal(subtreeToFindLeftest, func(val *tree.ValueNode) bool {
 		return true
 	})
-
 	if err != nil {
 		// todo: handle
 		panic("err")
@@ -406,7 +405,6 @@ func propagateLeft(value *tree.ValueNode) {
 	rightmost, err := findRightmostVal(subtreeToFindRightest, func(val *tree.ValueNode) bool {
 		return true
 	})
-
 	if err != nil {
 		// todo: handle
 		panic("err")

@@ -25,8 +25,9 @@ func TestMagnitude_Example1WorksCorrectly(t *testing.T) {
 	node, err := tree.ParseNode("[9,1]")
 	require.NoError(t, err)
 
-	val := magnitude(node)
+	val, err := magnitude(node)
 
+	require.NoError(t, err)
 	assert.Equal(t, 29, val)
 }
 
@@ -34,8 +35,9 @@ func TestMagnitude_Example2WorksCorrectly(t *testing.T) {
 	node, err := tree.ParseNode("[1,9]")
 	require.NoError(t, err)
 
-	val := magnitude(node)
+	val, err := magnitude(node)
 
+	require.NoError(t, err)
 	assert.Equal(t, 21, val)
 }
 
@@ -43,8 +45,9 @@ func TestMagnitude_Example3WorksCorrectly(t *testing.T) {
 	node, err := tree.ParseNode("[[1,2],[[3,4],5]]")
 	require.NoError(t, err)
 
-	val := magnitude(node)
+	val, err := magnitude(node)
 
+	require.NoError(t, err)
 	assert.Equal(t, 143, val)
 }
 
@@ -52,8 +55,9 @@ func TestMagnitude_Example4WorksCorrectly(t *testing.T) {
 	node, err := tree.ParseNode("[[9,1],[1,9]]")
 	require.NoError(t, err)
 
-	val := magnitude(node)
+	val, err := magnitude(node)
 
+	require.NoError(t, err)
 	assert.Equal(t, 129, val)
 }
 
