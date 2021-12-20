@@ -22,7 +22,7 @@ func (img Image) Clone() Image {
 
 // FromExisting creates new image with sizeX x sizeY and places top left corner of the old
 // image to the [posX;posY].
-func FromExisting(img Image, sizeX, sizeY, posX, posY int) (Image, error) {
+func FromExisting(img Image, sizeX, sizeY, posX, posY int, emptyPixelVal byte) (Image, error) {
 	if sizeX < len(img.Pixels)+posX {
 		return Image{}, errors.New("can't fit big image to small canvas")
 	}
@@ -30,6 +30,9 @@ func FromExisting(img Image, sizeX, sizeY, posX, posY int) (Image, error) {
 	pixels := make([][]byte, 0, sizeX)
 	for i := 0; i < sizeY; i++ {
 		line := make([]byte, sizeY)
+		for i := range line {
+			line[i] = emptyPixelVal
+		}
 		pixels = append(pixels, line)
 	}
 

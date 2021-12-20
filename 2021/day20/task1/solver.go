@@ -8,7 +8,7 @@ import (
 )
 
 func Solve(data input.Data) (int, error) {
-	resized, err := image.FromExisting(data.Image, len(data.Image.Pixels)+4, len(data.Image.Pixels[0])+4, 2, 2)
+	resized, err := image.FromExisting(data.Image, len(data.Image.Pixels)+4, len(data.Image.Pixels[0])+4, 2, 2, byte(getOutOfBoundsVal(data.Algorithm, 1)))
 	if err != nil {
 		return 0, err
 	}
@@ -23,7 +23,7 @@ func Solve(data input.Data) (int, error) {
 	prettyPrint(step0)
 	fmt.Println()
 
-	resizedS1, err := image.FromExisting(step0, len(step0.Pixels)+4, len(step0.Pixels[0])+4, 2, 2)
+	resizedS1, err := image.FromExisting(step0, len(step0.Pixels)+4, len(step0.Pixels[0])+4, 2, 2, byte(getOutOfBoundsVal(data.Algorithm, 1)))
 	if err != nil {
 		return 0, err
 	}
@@ -71,13 +71,16 @@ func enhance(resized image.Image, algorithm algorithm.Algorithm, step int) image
 	newImage := resized.Clone()
 
 	for ; center.x < len(resized.Pixels); center.x++ {
+
 		for ; center.y < len(resized.Pixels[0]); center.y++ {
 			number := getNumericVal(resized, algorithm, center, step)
 			algorithmVal := algorithm[number]
 			newImage.Pixels[center.x][center.y] = algorithmVal
 		}
 
-		center.y = 1
+		// fmt.Println()
+		// prettyPrint(newImage)
+		center.y = 0
 	}
 
 	return newImage
@@ -96,22 +99,26 @@ func getNumericVal(resized image.Image, alg algorithm.Algorithm, center position
 	return num
 }
 
-func getVal(resized image.Image, alg algorithm.Algorithm, i int, j int, step int) int {
+func getVal(resized image.Image, alg algorithm.Algorithm, i, j, step int) int {
 	if i < 0 || i >= len(resized.Pixels) || j < 0 || j >= len(resized.Pixels[0]) {
-		switch {
-		case step == 0:
-			return 0
-		case step%2 == 0:
-			return int(alg[0])
-		default:
-			if alg[0] == 0 {
-				return 0
-			} else {
-				return int(alg[511])
-			}
-		}
+		return getOutOfBoundsVal(alg, step)
 	} else {
 		return int(resized.Pixels[i][j])
+	}
+}
+
+func getOutOfBoundsVal(alg algorithm.Algorithm, step int) int {
+	switch {
+	case step == 0:
+		return 0
+	case step%2 == 0:
+		return int(alg[0])
+	default:
+		if alg[0] == 0 {
+			return 0
+		} else {
+			return int(alg[511])
+		}
 	}
 }
 
