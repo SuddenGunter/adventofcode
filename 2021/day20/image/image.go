@@ -6,6 +6,20 @@ type Image struct {
 	Pixels [][]byte
 }
 
+func (img Image) Clone() Image {
+	pixels := make([][]byte, 0, len(img.Pixels))
+	for i := range img.Pixels {
+		line := make([]byte, len(img.Pixels[0]))
+		for j := range img.Pixels[i] {
+			line[j] = img.Pixels[i][j]
+		}
+
+		pixels = append(pixels, line)
+	}
+
+	return Image{Pixels: pixels}
+}
+
 // FromExisting creates new image with sizeX x sizeY and places top left corner of the old
 // image to the [posX;posY].
 func FromExisting(img Image, sizeX, sizeY, posX, posY int) (Image, error) {
