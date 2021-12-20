@@ -7,34 +7,30 @@ import (
 	"fmt"
 )
 
+const (
+	stepSize = 2
+	simSize  = 4
+)
+
 func Solve(data input.Data) (int, error) {
-	resized, err := image.FromExisting(data.Image, len(data.Image.Pixels)+4, len(data.Image.Pixels[0])+4, 2, 2, byte(getOutOfBoundsVal(data.Algorithm, 1)))
-	if err != nil {
-		return 0, err
+	outOfBounds := byte(0)
+
+	stepResult := data.Image.Clone()
+	for i := 0; i < stepSize; i++ {
+		resized, err := image.FromExisting(stepResult, len(stepResult.Pixels)+simSize, len(stepResult.Pixels[0])+simSize, simSize/2, simSize/2, outOfBounds)
+		if err != nil {
+			return 0, err
+		}
+
+		stepResult = enhance(resized, data.Algorithm, outOfBounds)
+		if outOfBounds == 0 {
+			outOfBounds = data.Algorithm[0]
+		} else {
+			outOfBounds = data.Algorithm[511]
+		}
 	}
 
-	fmt.Println("original image")
-	prettyPrint(resized)
-	fmt.Println()
-
-	step0 := enhance(resized, data.Algorithm, 0)
-
-	fmt.Println("step0")
-	prettyPrint(step0)
-	fmt.Println()
-
-	resizedS1, err := image.FromExisting(step0, len(step0.Pixels)+4, len(step0.Pixels[0])+4, 2, 2, byte(getOutOfBoundsVal(data.Algorithm, 1)))
-	if err != nil {
-		return 0, err
-	}
-
-	step1 := enhance(resizedS1, data.Algorithm, 1)
-
-	fmt.Println("step1")
-	prettyPrint(step1)
-	fmt.Println()
-
-	return calculateLit(step1), nil
+	return calculateLit(stepResult), nil
 }
 
 func prettyPrint(img image.Image) {
@@ -62,7 +58,7 @@ func calculateLit(img image.Image) int {
 	return sum
 }
 
-func enhance(resized image.Image, algorithm algorithm.Algorithm, step int) image.Image {
+func enhance(resized image.Image, algorithm algorithm.Algorithm, outOfBounds byte) image.Image {
 	center := position{
 		x: 0,
 		y: 0,
@@ -73,52 +69,35 @@ func enhance(resized image.Image, algorithm algorithm.Algorithm, step int) image
 	for ; center.x < len(resized.Pixels); center.x++ {
 
 		for ; center.y < len(resized.Pixels[0]); center.y++ {
-			number := getNumericVal(resized, algorithm, center, step)
+			number := getNumericVal(resized, algorithm, center, outOfBounds)
 			algorithmVal := algorithm[number]
 			newImage.Pixels[center.x][center.y] = algorithmVal
 		}
 
-		// fmt.Println()
-		// prettyPrint(newImage)
 		center.y = 0
 	}
 
 	return newImage
 }
 
-func getNumericVal(resized image.Image, alg algorithm.Algorithm, center position, step int) int {
+func getNumericVal(resized image.Image, alg algorithm.Algorithm, center position, outOfBounds byte) int {
 	num := 0
 
 	for i := -1; i <= 1; i++ {
 		for j := -1; j <= 1; j++ {
 			num = num << 1
-			num += getVal(resized, alg, center.x+i, center.y+j, step)
+			num += getVal(resized, alg, center.x+i, center.y+j, outOfBounds)
 		}
 	}
 
 	return num
 }
 
-func getVal(resized image.Image, alg algorithm.Algorithm, i, j, step int) int {
+func getVal(resized image.Image, alg algorithm.Algorithm, i, j int, outOfBounds byte) int {
 	if i < 0 || i >= len(resized.Pixels) || j < 0 || j >= len(resized.Pixels[0]) {
-		return getOutOfBoundsVal(alg, step)
+		return int(outOfBounds)
 	} else {
 		return int(resized.Pixels[i][j])
-	}
-}
-
-func getOutOfBoundsVal(alg algorithm.Algorithm, step int) int {
-	switch {
-	case step == 0:
-		return 0
-	case step%2 == 0:
-		return int(alg[0])
-	default:
-		if alg[0] == 0 {
-			return 0
-		} else {
-			return int(alg[511])
-		}
 	}
 }
 
