@@ -19,7 +19,7 @@ func Solve(data input.Data) (uint64, error) {
 	var p1wins, p2wins uint64
 
 	for k, v := range totalRolled2Realitites {
-		p1w, p2w := Game(data.P1, data.P2, true, k, v)
+		p1w, p2w := Game(data.P1, data.P2, true, k)
 
 		p1wins += p1w * v
 		p2wins += p2w * v
@@ -28,7 +28,7 @@ func Solve(data input.Data) (uint64, error) {
 	return max(p1wins, p2wins), nil
 }
 
-func Game(p1, p2 game.Player, p1turn bool, roll, rollMP uint64) (uint64, uint64) {
+func Game(p1, p2 game.Player, p1turn bool, roll uint64) (uint64, uint64) {
 	var p1wins, p2wins uint64
 
 	if p1turn {
@@ -48,7 +48,7 @@ func Game(p1, p2 game.Player, p1turn bool, roll, rollMP uint64) (uint64, uint64)
 	}
 
 	for k, v := range totalRolled2Realitites {
-		p1w, p2w := Game(p1, p2, p1turn, k, v)
+		p1w, p2w := Game(p1, p2, p1turn, k)
 
 		p1wins += p1w * v
 		p2wins += p2w * v
