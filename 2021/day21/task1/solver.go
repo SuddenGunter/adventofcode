@@ -10,15 +10,17 @@ var rand, rolls = rng.Deterministic()
 
 func Solve(data input.Data) (uint64, error) {
 	p1Turn := true
-	for {
 
+	for {
 		if p1Turn {
 			Step(&data.P1)
+
 			if Won(data.P1) {
 				return rolls() * data.P2.Score, nil
 			}
 		} else {
 			Step(&data.P2)
+
 			if Won(data.P2) {
 				return rolls() * data.P1.Score, nil
 			}

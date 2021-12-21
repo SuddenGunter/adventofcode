@@ -7,6 +7,7 @@ func Deterministic() (func() uint64, func() uint64) {
 	return func() uint64 {
 			state++
 			rolls++
+
 			if state > 100 {
 				state = 1
 			}
