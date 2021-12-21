@@ -13,8 +13,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(data)
-
 	t1, err := task1.Solve(data)
 	fmt.Printf("task 1 answer: %v, err: %v\n", t1, err)
 
