@@ -49,17 +49,17 @@ func parseLine(l string) (geometry.Cuboid, error) {
 		x = strings.TrimPrefix(x, "off ")
 	}
 
-	x1, x2, err := parseNumbers(x, 'x')
+	x1, x2, err := parseNumbers(x, "x")
 	if err != nil {
 		return geometry.Cuboid{}, err
 	}
 
-	y1, y2, err := parseNumbers(y, 'y')
+	y1, y2, err := parseNumbers(y, "y")
 	if err != nil {
 		return geometry.Cuboid{}, err
 	}
 
-	z1, z2, err := parseNumbers(z, 'z')
+	z1, z2, err := parseNumbers(z, "z")
 	if err != nil {
 		return geometry.Cuboid{}, err
 	}
@@ -74,8 +74,8 @@ func parseLine(l string) (geometry.Cuboid, error) {
 	return cuboid, nil
 }
 
-func parseNumbers(numbers string, letter rune) (int, int, error) {
-	numbers = strings.Trim(numbers, fmt.Sprintf(" %v=", letter))
+func parseNumbers(numbers string, letter string) (int, int, error) {
+	numbers = strings.TrimPrefix(numbers, fmt.Sprintf("%v=", letter))
 	split := strings.Split(numbers, "..")
 
 	first, err := strconv.Atoi(split[0])
