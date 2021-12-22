@@ -1,18 +1,20 @@
 package geometry
 
-import "math"
-
-type Cuboid struct {
-	X1, X2 int
-	Y1, Y2 int
-	Z1, Z2 int
+type Operation struct {
+	Cuboid Cuboid
 	On     bool
 }
 
-func (c Cuboid) Volume() int {
-	vol := math.Abs(float64(c.X1-c.X2)) *
-		math.Abs(float64(c.Y1-c.Y2)) *
-		math.Abs(float64(c.Z1-c.Z2))
+type Cuboid struct {
+	LowerX, UpperX int64
+	LowerY, UpperY int64
+	LowerZ, UpperZ int64
+}
 
-	return int(vol)
+func (c Cuboid) Volume() int64 {
+	vol := float64(c.UpperX-c.LowerX+1) *
+		float64(c.UpperY-c.LowerY+1) *
+		float64(c.UpperZ-c.LowerZ+1)
+
+	return int64(vol)
 }

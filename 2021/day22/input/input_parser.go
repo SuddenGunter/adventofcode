@@ -9,7 +9,7 @@ import (
 )
 
 type Data struct {
-	Cuboids []geometry.Cuboid
+	Operations []geometry.Operation
 }
 
 func ParseInput(name string) (Data, error) {
@@ -22,28 +22,29 @@ func ParseInput(name string) (Data, error) {
 
 	lines = lines[:len(lines)-1]
 
-	cuboids := make([]geometry.Cuboid, 0, len(lines))
+	operations := make([]geometry.Operation, 0, len(lines))
+
 	for _, l := range lines {
-		c, err := parseLine(l)
+		op, err := parseLine(l)
 		if err != nil {
 			return Data{}, err
 		}
 
-		cuboids = append(cuboids, c)
+		operations = append(operations, op)
 	}
 
-	return Data{Cuboids: cuboids}, nil
+	return Data{Operations: operations}, nil
 }
 
-func parseLine(l string) (geometry.Cuboid, error) {
+func parseLine(l string) (geometry.Operation, error) {
 	split := strings.Split(l, ",")
 	x := split[0]
 	y := split[1]
 	z := split[2]
 
-	cuboid := geometry.Cuboid{}
+	op := geometry.Operation{}
 	if strings.HasPrefix(x, "on") {
-		cuboid.On = true
+		op.On = true
 		x = strings.TrimPrefix(x, "on ")
 	} else {
 		x = strings.TrimPrefix(x, "off ")
@@ -51,30 +52,34 @@ func parseLine(l string) (geometry.Cuboid, error) {
 
 	x1, x2, err := parseNumbers(x, "x")
 	if err != nil {
-		return geometry.Cuboid{}, err
+		return geometry.Operation{}, err
 	}
 
 	y1, y2, err := parseNumbers(y, "y")
 	if err != nil {
-		return geometry.Cuboid{}, err
+		return geometry.Operation{}, err
 	}
 
 	z1, z2, err := parseNumbers(z, "z")
 	if err != nil {
-		return geometry.Cuboid{}, err
+		return geometry.Operation{}, err
 	}
 
-	cuboid.X1 = x1
-	cuboid.X2 = x2
-	cuboid.Y1 = y1
-	cuboid.Y2 = y2
-	cuboid.Z1 = z1
-	cuboid.Z2 = z2
+	cuboid := geometry.Cuboid{
+		LowerX: x1,
+		UpperX: x2,
+		LowerY: y1,
+		UpperY: y2,
+		LowerZ: z1,
+		UpperZ: z2,
+	}
 
-	return cuboid, nil
+	op.Cuboid = cuboid
+
+	return op, nil
 }
 
-func parseNumbers(numbers string, letter string) (int, int, error) {
+func parseNumbers(numbers, letter string) (int64, int64, error) {
 	numbers = strings.TrimPrefix(numbers, fmt.Sprintf("%v=", letter))
 	split := strings.Split(numbers, "..")
 
@@ -88,11 +93,12 @@ func parseNumbers(numbers string, letter string) (int, int, error) {
 		return 0, 0, err
 	}
 
-	first, second = minFirst(first, second)
-	return first, second, nil
+	fi64, si64 := minFirst(int64(first), int64(second))
+
+	return fi64, si64, nil
 }
 
-func minFirst(a, b int) (int, int) {
+func minFirst(a, b int64) (int64, int64) {
 	if a < b {
 		return a, b
 	}
