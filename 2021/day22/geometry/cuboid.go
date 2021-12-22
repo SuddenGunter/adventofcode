@@ -6,6 +6,7 @@ type Cuboid struct {
 	X1, X2 int
 	Y1, Y2 int
 	Z1, Z2 int
+	On     bool
 }
 
 func (c Cuboid) Volume() int {
