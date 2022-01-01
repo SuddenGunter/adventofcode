@@ -4,9 +4,13 @@
 
 How to run:
 
-This task was mostly solved by reverse-engineering my assignment input, it will not work for yours.
-You could use this as an inspiration source though.
+Put your data into 'data.txt' (in the same directory as this readme file).
+
 ```sh
 go build -o app .
 ./app
 ```
+
+## Sources
+
+The solution is based on [this document](https://github.com/mebeim/aoc/blob/master/2021/README.md#day-24---arithmetic-logic-unit) from [Marco Bonelli](github.com/mebeim).

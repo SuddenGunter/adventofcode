@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	t1, err := task1.Solve()
+	t1, err := task1.Solve("data.txt")
 	fmt.Printf("task 1 answer: %v, err: %v\n", t1, err)
 }
