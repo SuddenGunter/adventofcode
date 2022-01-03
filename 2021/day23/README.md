@@ -1,6 +1,6 @@
-# Day10
+# Day23
 
-[Challenge link](https://adventofcode.com/2021/day/10).
+[Challenge link](https://adventofcode.com/2021/day/23).
 
 How to run:
 
