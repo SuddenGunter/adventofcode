@@ -10,16 +10,33 @@ type Move struct {
 	StateAfterMove amphipod.Burrow
 }
 
+var cache = make(map[amphipod.Burrow]uint64, 1000000)
+
 func Solve(data amphipod.Burrow) uint64 {
 	if done(data.Rooms) {
 		return 0
 	}
 
+	res, found := cache[data]
+	if found {
+		return res
+	}
+
 	best := uint64(math.MaxUint64)
 
-	for _, move := range getValidMoves(data) {
+	moves := getValidMoves(data)
+
+	//fmt.Println("valid moves")
+	//for _, m := range moves {
+	//	fmt.Println()
+	//	fmt.Println(m.StateAfterMove)
+	//}
+
+	for _, move := range moves {
 		cost := move.TotalCost
-		cost += Solve(data)
+		result := Solve(move.StateAfterMove)
+		cache[move.StateAfterMove] = result
+		cost += result
 
 		if cost < best {
 			best = cost
@@ -113,7 +130,7 @@ func getValidMovesFromHall(data amphipod.Burrow) []Move {
 		depth := amphipod.RoomSize - 1
 		for depth >= 0 {
 			if room[depth] == pod {
-				depth++
+				depth--
 				continue
 			}
 
