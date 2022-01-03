@@ -2,6 +2,7 @@ package task1
 
 import (
 	"aoc-2021-day23/task1/amphipod"
+	"fmt"
 	"math"
 )
 
@@ -10,9 +11,9 @@ type Move struct {
 	StateAfterMove amphipod.Burrow
 }
 
-var cache = make(map[amphipod.Burrow]uint64, 1000000)
+var cache = make(map[amphipod.Burrow]uint64, 100)
 
-func Solve(data amphipod.Burrow) uint64 {
+func Solve(data amphipod.Burrow, oldStates []amphipod.Burrow) uint64 {
 	if done(data.Rooms) {
 		return 0
 	}
@@ -34,7 +35,23 @@ func Solve(data amphipod.Burrow) uint64 {
 
 	for _, move := range moves {
 		cost := move.TotalCost
-		result := Solve(move.StateAfterMove)
+
+		newStates := make([]amphipod.Burrow, 0)
+		if oldStates != nil {
+			for _, v := range oldStates {
+				newStates = append(newStates, v)
+			}
+		}
+
+		if len(newStates) >= 20 {
+			fmt.Println("STEPS")
+			fmt.Println(newStates)
+			panic("panic")
+		}
+
+		newStates = append(newStates, data)
+
+		result := Solve(move.StateAfterMove, newStates)
 		cache[move.StateAfterMove] = result
 		cost += result
 
@@ -72,6 +89,7 @@ func getValidMovesFromRoom(data amphipod.Burrow) []Move {
 	movesFromRoom := make([]Move, 0)
 
 	for i, room := range data.Rooms {
+
 		j := 0
 		for j < amphipod.RoomSize {
 			if room[j] == '.' {
@@ -88,8 +106,20 @@ func getValidMovesFromRoom(data amphipod.Burrow) []Move {
 			continue
 		}
 
+		nbr := amphipod.NameByRoom(i)
+		containsOnlyOwners := true
+		for z := j; z < amphipod.RoomSize; z++ {
+			if room[z] != nbr {
+				containsOnlyOwners = false
+			}
+		}
+
+		if containsOnlyOwners {
+			continue
+		}
+
 		for h := range data.Hall {
-			if !amphipod.EnterableHallCell(h) {
+			if !amphipod.EnterableHallCell(h) || data.Hall[h] != '.' {
 				continue
 			}
 

@@ -12,7 +12,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(data)
-	t1 := task1.Solve(data)
+	t1 := task1.Solve(data, nil)
 	fmt.Printf("task 1 answer: %v\n", t1)
 
 	// t2, err := task2.Solve(data)

@@ -27,6 +27,10 @@ func RoomByName(name rune) int {
 	}
 }
 
+func NameByRoom(room int) rune {
+	return 'A' + rune(room)
+}
+
 type Burrow struct {
 	Hall  [HallSize]rune
 	Rooms [Rooms][RoomSize]rune
