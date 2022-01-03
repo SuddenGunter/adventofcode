@@ -8,9 +8,47 @@ const (
 	RoomSize = 2
 )
 
+func EnterableHallCell(i int) bool {
+	return !(i%2 == 0 && i != 0 && i != HallSize-1)
+}
+
+func RoomByName(name rune) int {
+	switch name {
+	case 'A':
+		return 0
+	case 'B':
+		return 1
+	case 'C':
+		return 2
+	case 'D':
+		return 3
+	default:
+		return -1
+	}
+}
+
 type Burrow struct {
 	Hall  [HallSize]rune
 	Rooms [Rooms][RoomSize]rune
+}
+
+func (b Burrow) Clone() Burrow {
+	var hall [HallSize]rune
+	for i := range b.Hall {
+		hall[i] = b.Hall[i]
+	}
+
+	var rooms [Rooms][RoomSize]rune
+	for i := range b.Rooms {
+		for j := range b.Rooms[i] {
+			rooms[i][j] = b.Rooms[i][j]
+		}
+	}
+
+	return Burrow{
+		Hall:  hall,
+		Rooms: rooms,
+	}
 }
 
 func (b Burrow) String() string {
