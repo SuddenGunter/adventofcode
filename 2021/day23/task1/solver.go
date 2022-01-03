@@ -151,11 +151,11 @@ func getValidMovesFromHall(data amphipod.Burrow) []Move {
 
 func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) uint64 {
 	var start, end int
-	if hall/2 < room+1 {
+	if hall < 2*(room+1) {
 		start = hall
-		end = room + 1
+		end = 2 * (room + 1)
 	} else {
-		start = room + 1
+		start = 2 * (room + 1)
 		end = hall
 	}
 
