@@ -7,13 +7,13 @@ import (
 )
 
 type Move struct {
-	TotalCost      uint64
+	TotalCost      float64
 	StateAfterMove amphipod.Burrow
 }
 
-var cache = make(map[amphipod.Burrow]uint64, 100)
+var cache = make(map[amphipod.Burrow]float64, 100)
 
-func Solve(data amphipod.Burrow, oldStates []amphipod.Burrow) uint64 {
+func Solve(data amphipod.Burrow, oldStates []amphipod.Burrow) float64 {
 	if done(data.Rooms) {
 		return 0
 	}
@@ -23,7 +23,7 @@ func Solve(data amphipod.Burrow, oldStates []amphipod.Burrow) uint64 {
 		return res
 	}
 
-	best := uint64(math.MaxUint64)
+	best := math.Inf(+1)
 
 	moves := getValidMoves(data)
 
@@ -50,9 +50,9 @@ func Solve(data amphipod.Burrow, oldStates []amphipod.Burrow) uint64 {
 		}
 
 		newStates = append(newStates, data)
-
 		result := Solve(move.StateAfterMove, newStates)
 		cache[move.StateAfterMove] = result
+		// todo: what if result is max?
 		cost += result
 
 		if cost < best {
@@ -126,7 +126,7 @@ func getValidMovesFromRoom(data amphipod.Burrow) []Move {
 			cost := getMoveCost(h, i, j, data, room[j])
 
 			// no path or no place in cell
-			if cost == math.MaxUint64 {
+			if math.IsInf(cost, +1) {
 				continue
 			}
 
@@ -179,7 +179,7 @@ func getValidMovesFromHall(data amphipod.Burrow) []Move {
 		cost := getMoveCost(i, roomNum, depth, data, pod)
 
 		// no path or no place in room
-		if cost == math.MaxUint64 {
+		if math.IsInf(cost, +1) {
 			continue
 		}
 
@@ -196,7 +196,7 @@ func getValidMovesFromHall(data amphipod.Burrow) []Move {
 	return movesFromHall
 }
 
-func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) uint64 {
+func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) float64 {
 	var start, end int
 	if hall < 2*(room+1) {
 		start = hall
@@ -209,11 +209,11 @@ func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) uint64 {
 	for _, r := range burrow.Hall[start:end] {
 		// hall is blocked
 		if r != '.' {
-			return math.MaxUint64
+			return math.Inf(+1)
 		}
 	}
 
 	cost := (end - start + (depth + 1)) * amphipod.Cost[r]
 
-	return uint64(cost)
+	return float64(cost)
 }
