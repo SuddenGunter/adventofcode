@@ -10,9 +10,38 @@ type Move struct {
 	StateAfterMove amphipod.Burrow
 }
 
-func Solve(data amphipod.Burrow) (int, error) {
-	validMoves := getValidMoves(data)
-	return 0, nil
+func Solve(data amphipod.Burrow) uint64 {
+	if done(data.Rooms) {
+		return 0
+	}
+
+	best := uint64(math.MaxUint64)
+
+	for _, move := range getValidMoves(data) {
+		cost := move.TotalCost
+		cost += Solve(data)
+
+		if cost < best {
+			best = cost
+		}
+	}
+
+	return best
+}
+
+func done(rooms [amphipod.Rooms][amphipod.RoomSize]rune) bool {
+	char := 'A'
+	for i := range rooms {
+		for _, r := range rooms[i] {
+			if r != char {
+				return false
+			}
+		}
+
+		char++
+	}
+
+	return true
 }
 
 func getValidMoves(data amphipod.Burrow) []Move {
@@ -47,8 +76,7 @@ func getValidMovesFromRoom(data amphipod.Burrow) []Move {
 				continue
 			}
 
-			// todo j is the depth!
-			_, cost := getMoveCost()
+			cost := getMoveCost(h, i, j, data, room[j])
 
 			// no path or no place in cell
 			if cost == math.MaxUint64 {
@@ -82,12 +110,26 @@ func getValidMovesFromHall(data amphipod.Burrow) []Move {
 		roomNum := amphipod.RoomByName(pod)
 		room := data.Rooms[roomNum]
 
+		depth := amphipod.RoomSize - 1
+		for depth >= 0 {
+			if room[depth] == pod {
+				depth++
+				continue
+			}
+
+			if room[depth] == '.' {
+				break
+			}
+
+			depth = -1
+		}
+
 		// cannot move if other types of amphipod present in room
-		if !containsOnlyOwners(room, pod) {
+		if depth == -1 {
 			continue
 		}
 
-		depth, cost := getMoveCost()
+		cost := getMoveCost(i, roomNum, depth, data, pod)
 
 		// no path or no place in room
 		if cost == math.MaxUint64 {
@@ -107,16 +149,24 @@ func getValidMovesFromHall(data amphipod.Burrow) []Move {
 	return movesFromHall
 }
 
-func getMoveCost() (int, uint64) {
-	return 0, math.MaxUint64
-}
+func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) uint64 {
+	var start, end int
+	if hall/2 < room+1 {
+		start = hall
+		end = room + 1
+	} else {
+		start = room + 1
+		end = hall
+	}
 
-func containsOnlyOwners(runes [amphipod.RoomSize]rune, pod rune) bool {
-	for _, r := range runes {
-		if r != '.' && r != pod {
-			return false
+	for _, r := range burrow.Hall[start:end] {
+		// hall is blocked
+		if r != '.' {
+			return math.MaxUint64
 		}
 	}
 
-	return true
+	cost := (end - start + (depth + 1)) * amphipod.Cost[r]
+
+	return uint64(cost)
 }
