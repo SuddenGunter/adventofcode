@@ -1,11 +1,16 @@
 package input
 
 import (
-	"aoc-2021-day23/task1/amphipod"
+	"aoc-2021-day23/task2/amphipod"
 	"errors"
 	"os"
 	"strings"
 )
+
+var additionalLines = []string{
+	"  #D#C#B#A#",
+	"  #D#B#A#C#",
+}
 
 func ParseInput(name string) (amphipod.Burrow, error) {
 	file, err := os.ReadFile(name)
@@ -14,6 +19,11 @@ func ParseInput(name string) (amphipod.Burrow, error) {
 	}
 
 	lines := strings.Split(string(file), "\n")
+	newLines := make([]string, 0)
+	newLines = append(newLines, lines[:3]...)
+	newLines = append(newLines, additionalLines...)
+	newLines = append(newLines, lines[3:]...)
+	lines = newLines
 
 	lines = lines[1 : len(lines)-2]
 	hall, err := parseHall(lines)

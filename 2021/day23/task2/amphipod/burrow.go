@@ -8,7 +8,7 @@ import (
 const (
 	HallSize = 11
 	Rooms    = 4
-	RoomSize = 2
+	RoomSize = 4
 )
 
 func EnterableHallCell(i int) bool {

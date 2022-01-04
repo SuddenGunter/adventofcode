@@ -1,8 +1,8 @@
-package task1
+package task2
 
 import (
-	"aoc-2021-day23/task1/amphipod"
-	"aoc-2021-day23/task1/input"
+	"aoc-2021-day23/task2/amphipod"
+	"aoc-2021-day23/task2/input"
 	"math"
 )
 
@@ -45,8 +45,8 @@ func solve(data amphipod.Burrow) float64 {
 		//		newStates = append(newStates, v)
 		//	}
 		//}
-
-		// newStates = append(newStates, move.StateAfterMove)
+		//
+		//newStates = append(newStates, move.StateAfterMove)
 
 		result := solve(move.StateAfterMove)
 
