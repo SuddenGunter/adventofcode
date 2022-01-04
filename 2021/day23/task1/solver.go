@@ -2,7 +2,6 @@ package task1
 
 import (
 	"aoc-2021-day23/task1/amphipod"
-	"fmt"
 	"math"
 )
 
@@ -11,7 +10,7 @@ type Move struct {
 	StateAfterMove amphipod.Burrow
 }
 
-var cache = make(map[amphipod.Burrow]float64, 100)
+var cache = make(map[amphipod.Burrow]float64, 3000)
 
 func Solve(data amphipod.Burrow, oldStates []amphipod.Burrow) float64 {
 	if done(data.Rooms) {
@@ -26,6 +25,29 @@ func Solve(data amphipod.Burrow, oldStates []amphipod.Burrow) float64 {
 	best := math.Inf(+1)
 
 	moves := getValidMoves(data)
+
+	//if data.HallEmpty() && (oldStates == nil || len(oldStates) == 0) {
+	//	if len(moves) > 1 {
+	//		for _, m := range moves {
+	//			if m.StateAfterMove.Hall[3] == 66 && m.StateAfterMove.Rooms[2][0] == '.' {
+	//				moves = []Move{m}
+	//				break
+	//			}
+	//		}
+	//	}
+	//}
+	//
+	//if oldStates != nil && len(oldStates) == 1 {
+	//	if len(moves) > 1 {
+	//		for _, m := range moves {
+	//			if m.StateAfterMove.Hall[3] == 66 && m.StateAfterMove.Hall[5] == 67 {
+	//				moves = []Move{m}
+	//				break
+	//			}
+	//		}
+	//	}
+	//
+	//}
 
 	//fmt.Println("valid moves")
 	//for _, m := range moves {
@@ -43,14 +65,16 @@ func Solve(data amphipod.Burrow, oldStates []amphipod.Burrow) float64 {
 			}
 		}
 
-		if len(newStates) >= 20 {
-			fmt.Println("STEPS")
-			fmt.Println(newStates)
-			panic("panic")
-		}
+		//if len(newStates) >= 30 {
+		//	fmt.Println("STEPS")
+		//	fmt.Println(newStates)
+		//	panic("panic")
+		//}
 
-		newStates = append(newStates, data)
+		newStates = append(newStates, move.StateAfterMove)
+
 		result := Solve(move.StateAfterMove, newStates)
+
 		cache[move.StateAfterMove] = result
 		// todo: what if result is max?
 		cost += result
@@ -199,11 +223,11 @@ func getValidMovesFromHall(data amphipod.Burrow) []Move {
 func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) float64 {
 	var start, end int
 	if hall < 2*(room+1) {
-		start = hall
+		start = hall + 1
 		end = 2 * (room + 1)
 	} else {
 		start = 2 * (room + 1)
-		end = hall
+		end = hall - 1
 	}
 
 	for _, r := range burrow.Hall[start:end] {
@@ -211,6 +235,12 @@ func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) float64 
 		if r != '.' {
 			return math.Inf(+1)
 		}
+	}
+
+	if hall < 2*(room+1) {
+		start--
+	} else {
+		end++
 	}
 
 	cost := (end - start + (depth + 1)) * amphipod.Cost[r]

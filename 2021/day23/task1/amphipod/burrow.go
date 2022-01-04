@@ -36,6 +36,16 @@ type Burrow struct {
 	Rooms [Rooms][RoomSize]rune
 }
 
+func (b Burrow) HallEmpty() bool {
+	for _, r := range b.Hall {
+		if r != '.' {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (b Burrow) Clone() Burrow {
 	var hall [HallSize]rune
 	for i := range b.Hall {
