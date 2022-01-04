@@ -39,7 +39,7 @@ func parseRooms(lines []string) ([amphipod.Rooms][amphipod.RoomSize]rune, error)
 	for i := 0; i < amphipod.RoomSize; i++ {
 		j := 0
 
-		for _, r := range []rune(lines[line+i]) {
+		for _, r := range lines[line+i] {
 			switch r {
 			case '#', ' ', '\n':
 				continue
@@ -62,7 +62,7 @@ func parseHall(lines []string) ([amphipod.HallSize]rune, error) {
 	var hall [amphipod.HallSize]rune
 
 	i := 0
-	for _, r := range []rune(lines[0]) {
+	for _, r := range lines[0] {
 		switch r {
 		case '#', ' ', '\n':
 			continue

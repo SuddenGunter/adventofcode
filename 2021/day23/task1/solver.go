@@ -207,7 +207,7 @@ func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) float64 
 		end = hall - 1
 	}
 
-	for _, r := range burrow.Hall[start:end] {
+	for _, r := range burrow.Hall[start : end+1] {
 		// hall is blocked
 		if r != '.' {
 			return math.Inf(+1)

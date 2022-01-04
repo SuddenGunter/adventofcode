@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	t1 := task1.Solve("demo.data.txt")
+	t1 := task1.Solve("data.txt")
 	fmt.Printf("task 1 answer: %v\n", t1)
 
-	t2 := task2.Solve("demo.data.txt")
+	t2 := task2.Solve("data.txt")
 	fmt.Printf("task 2 answer: %v\n", t2)
 }

@@ -39,15 +39,6 @@ func solve(data amphipod.Burrow) float64 {
 	for _, move := range moves {
 		cost := move.TotalCost
 
-		//newStates := make([]amphipod.Burrow, 0)
-		//if oldStates != nil {
-		//	for _, v := range oldStates {
-		//		newStates = append(newStates, v)
-		//	}
-		//}
-		//
-		//newStates = append(newStates, move.StateAfterMove)
-
 		result := solve(move.StateAfterMove)
 
 		cache[move.StateAfterMove] = result
@@ -207,7 +198,7 @@ func getMoveCost(hall, room, depth int, burrow amphipod.Burrow, r rune) float64 
 		end = hall - 1
 	}
 
-	for _, r := range burrow.Hall[start:end] {
+	for _, r := range burrow.Hall[start : end+1] {
 		// hall is blocked
 		if r != '.' {
 			return math.Inf(+1)
