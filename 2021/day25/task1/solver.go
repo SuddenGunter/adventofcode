@@ -2,8 +2,6 @@ package task1
 
 import (
 	"aoc-2021-day25/input"
-	"aoc-2021-day25/printer"
-	"fmt"
 )
 
 func Solve(data input.Data) (int, error) {
@@ -18,9 +16,6 @@ func Solve(data input.Data) (int, error) {
 		}
 
 		moveEast(old, new)
-
-		printer.PrettyPrint(new)
-		fmt.Println()
 
 		movedEast := clone(new)
 
