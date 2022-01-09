@@ -1,10 +1,15 @@
 package task1
 
-import "aoc-2021-day25/input"
+import (
+	"aoc-2021-day25/input"
+	"aoc-2021-day25/printer"
+	"fmt"
+)
 
 func Solve(data input.Data) (int, error) {
 	old, new := clone(data.Cucumbers), emptyWithSizeOf(data.Cucumbers)
 	moves := 0
+
 	for !identical(old, new) {
 		if moves > 0 {
 			old, new = clone(new), emptyWithSizeOf(old)
@@ -12,7 +17,11 @@ func Solve(data input.Data) (int, error) {
 
 		moveEast(old, new)
 
+		printer.PrettyPrint(new)
+		fmt.Println()
+
 		movedEast := clone(new)
+		new = emptyWithSizeOf(new)
 
 		moveSouth(movedEast, new)
 		moves++
@@ -47,7 +56,6 @@ func moveSouth(old [][]rune, new [][]rune) {
 func moveEast(old [][]rune, new [][]rune) {
 	for i := range old {
 		for j := 1; j < len(old[i]); j++ {
-			//for j := range old[i][1:] {
 			prev := j - 1
 			if old[i][prev] == '>' && old[i][j] == '.' {
 				new[i][j] = '>'
