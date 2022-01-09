@@ -12,7 +12,9 @@ func Solve(data input.Data) (int, error) {
 
 	for !identical(old, new) {
 		if moves > 0 {
-			old, new = clone(new), emptyWithSizeOf(old)
+			old = clone(new)
+		} else {
+			new = clone(old)
 		}
 
 		moveEast(old, new)
@@ -21,7 +23,6 @@ func Solve(data input.Data) (int, error) {
 		fmt.Println()
 
 		movedEast := clone(new)
-		new = emptyWithSizeOf(new)
 
 		moveSouth(movedEast, new)
 		moves++
@@ -30,48 +31,36 @@ func Solve(data input.Data) (int, error) {
 	return moves, nil
 }
 
-func moveSouth(old [][]rune, new [][]rune) {
+func moveSouth(old, new [][]rune) {
 	for j := range old[0] {
 		for i := 1; i < len(old); i++ {
 			prev := i - 1
 			if old[prev][j] == 'v' && old[i][j] == '.' {
 				new[i][j] = 'v'
 				new[prev][j] = '.'
-			} else {
-				new[i][j] = old[i][j]
-				new[prev][j] = new[prev][j]
 			}
 		}
 
 		if old[0][j] == '.' && old[len(old)-1][j] == 'v' {
 			new[0][j] = 'v'
 			new[len(old)-1][j] = '.'
-		} else {
-			new[0][j] = old[0][j]
-			new[len(old)-1][j] = new[len(old)-1][j]
 		}
 	}
 }
 
-func moveEast(old [][]rune, new [][]rune) {
+func moveEast(old, new [][]rune) {
 	for i := range old {
 		for j := 1; j < len(old[i]); j++ {
 			prev := j - 1
 			if old[i][prev] == '>' && old[i][j] == '.' {
 				new[i][j] = '>'
 				new[i][prev] = '.'
-			} else {
-				new[i][j] = old[i][j]
-				new[i][prev] = old[i][prev]
 			}
 		}
 
 		if old[i][0] == '.' && old[i][len(old[i])-1] == '>' {
 			new[i][0] = '>'
 			new[i][len(old[i])-1] = '.'
-		} else {
-			new[i][0] = old[i][0]
-			new[i][len(old[i])-1] = old[i][len(old[i])-1]
 		}
 	}
 }
@@ -90,6 +79,7 @@ func identical(old, new [][]rune) bool {
 
 func clone(old [][]rune) [][]rune {
 	new := make([][]rune, len(old))
+
 	for i := range old {
 		row := make([]rune, len(old[i]))
 		for j := range old[i] {
@@ -104,6 +94,7 @@ func clone(old [][]rune) [][]rune {
 
 func emptyWithSizeOf(old [][]rune) [][]rune {
 	new := make([][]rune, len(old))
+
 	for i := range old {
 		row := make([]rune, len(old[i]))
 		new[i] = row
