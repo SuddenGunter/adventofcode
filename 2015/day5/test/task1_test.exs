@@ -7,7 +7,7 @@ defmodule Task1Test do
   end
 
   test "duplicates are nice" do
-    assert Task1.solution(["abcdde"]) == 1
+    assert Task1.solution(["agdde"]) == 1
   end
 
   test "ab cd pq xy are not nice" do
