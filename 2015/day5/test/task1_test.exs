@@ -3,11 +3,11 @@ defmodule Task1Test do
   doctest Task1
 
   test "three vowels is nice" do
-    assert Task1.solution(["aeiouaeiouaeiou"]) == 1
+    assert Task1.solution(["aaa"]) == 1
   end
 
   test "duplicates are nice" do
-    assert Task1.solution(["agdde"]) == 1
+    assert Task1.solution(["ugknbfddgicrmopn"]) == 1
   end
 
   test "ab cd pq xy are not nice" do
