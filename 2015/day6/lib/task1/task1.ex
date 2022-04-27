@@ -12,13 +12,15 @@ defmodule Task1 do
 
     pos
     |> Enum.reduce(acc, fn x, acc ->
-      Map.update(acc, x, false, fn old ->
+      Map.put(
+        acc,
+        x,
         case step.action do
-          :toggle -> !old
+          :toggle -> !Map.get(acc, x, false)
           :turn_on -> true
           :turn_off -> false
         end
-      end)
+      )
     end)
   end
 
