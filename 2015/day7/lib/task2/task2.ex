@@ -1,5 +1,5 @@
 defmodule Task2 do
-  @spec solution([%Signal{}]) :: integer()
+  @spec solution(%{String.t() => %Signal{}}) :: integer()
   def solution(_) do
     0
   end

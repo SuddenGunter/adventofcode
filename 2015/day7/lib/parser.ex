@@ -30,7 +30,14 @@ defmodule Parser do
         true -> :value
       end
 
-    operands = String.split(line, Atom.to_string(gate), trim: true)
+    # treat as special case and do not create extra noded if value is an integer.
+    if gate == :value,
+      do: %Signal{
+        gate: gate,
+        left: parseOperands([left], number)
+      }
+
+    operands = String.split(left, Atom.to_string(gate), trim: true)
 
     operands = parseOperands(operands, number)
 
@@ -57,7 +64,12 @@ defmodule Parser do
       {num, _} ->
         %{
           names: %{fieldName => Atom.to_string(fieldName) <> Integer.to_string(line)},
-          values: %{(Atom.to_string(fieldName) <> Integer.to_string(line)) => num}
+          values: %{
+            (Atom.to_string(fieldName) <> Integer.to_string(line)) => %Signal{
+              left: num,
+              gate: :value
+            }
+          }
         }
 
       :error ->
