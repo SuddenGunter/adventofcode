@@ -1,6 +1,6 @@
-defmodule Task1Test do
+defmodule GateTest do
   use ExUnit.Case
-  doctest Task1
+  doctest GateTest
 
   test "three vowels is nice" do
     assert Task1.solution(["aaa"]) == 1
