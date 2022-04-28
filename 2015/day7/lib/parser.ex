@@ -39,21 +39,21 @@ defmodule Parser do
 
     operands = String.split(left, Atom.to_string(gate), trim: true)
 
-    operands = parseOperands(operands, number)
+    parsedOperands = parseOperands(operands, number)
 
     names =
       Map.merge(
         %Signal{
           gate: gate
         },
-        operands.names
+        parsedOperands.names
       )
 
     Map.merge(
       %{
         key => names
       },
-      operands.values
+      parsedOperands.values
     )
   end
 
@@ -74,7 +74,7 @@ defmodule Parser do
 
       :error ->
         %{
-          names: %{left: first},
+          names: %{fieldName => first},
           values: %{}
         }
     end

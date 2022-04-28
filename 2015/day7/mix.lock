@@ -1,0 +1,3 @@
+%{
+  "memoize": {:hex, :memoize, "1.4.0", "dce828382552a03d166b0793772514835ea079d74aa5f825dceb2827ad86cf13", [:mix], [], "hexpm", "c73d50feef0d44a9fa9a4d7e13ca53c367b0307aeb48204301d07a01a707b776"},
+}
