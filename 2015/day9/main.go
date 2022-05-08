@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc-2015-day9/task2"
 	"fmt"
 
 	"aoc-2015-day9/parser"
@@ -15,4 +16,5 @@ func main() {
 	}
 
 	fmt.Println("task #1 solution: ", task1.Solve(data))
+	fmt.Println("task #2 solution: ", task2.Solve(data))
 }
