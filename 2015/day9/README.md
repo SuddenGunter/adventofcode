@@ -7,5 +7,5 @@ How to run:
 Put your data into 'data.txt' (in the same directory as this readme file).
 
 ```sh
-mix escript.build && ./day9
+go run main.go
 ```
