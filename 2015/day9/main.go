@@ -1,8 +1,9 @@
 package main
 
 import (
-	"aoc-2015-day9/task2"
 	"fmt"
+
+	"aoc-2015-day9/task2"
 
 	"aoc-2015-day9/parser"
 	"aoc-2015-day9/task1"
