@@ -12,6 +12,6 @@ First AoC that I've participated in. Solved in December 2021
 
 ## 2015
 
-14/50 stars
+20/50 stars
 
-Languages: Elixir
+Languages: Elixir, Go
