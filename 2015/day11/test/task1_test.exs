@@ -25,4 +25,16 @@ defmodule Task1Test do
   test "ghijklmn" do
     assert Task1.solution("ghijklmn") == "ghjaabcc"
   end
+
+  test "inc last aaaaaaay" do
+    assert Task1.incrementLast("aaaaaaay") == "aaaaaaaz"
+  end
+
+  test "inc last aaaaaaaz" do
+    assert Task1.incrementLast("aaaaaaaz") == "aaaaaaba"
+  end
+
+  test "inc last aaaaaazz" do
+    assert Task1.incrementLast("aaaaaazz") == "aaaaabaa"
+  end
 end

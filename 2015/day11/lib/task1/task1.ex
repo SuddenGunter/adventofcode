@@ -18,7 +18,7 @@ defmodule Task1 do
   def incrementLast(line) do
     chars = String.to_charlist(line)
 
-    increment(chars, 7) |> List.to_string
+    increment(chars, 7) |> List.to_string()
   end
 
   defp increment(chars, pos) when pos == -1 do
@@ -31,7 +31,7 @@ defmodule Task1 do
     endSigns = Enum.drop(chars, pos + 1)
 
     case char do
-      121 ->
+      122 ->
         increment(signs ++ ['a'] ++ endSigns, pos - 1)
 
       _ ->
@@ -56,7 +56,7 @@ defmodule Task1 do
     if length(pairs) < 2 do
       false
     else
-      processPairs(pairs, line)
+      processPairs(pairs)
     end
   end
 
@@ -68,14 +68,13 @@ defmodule Task1 do
     |> Enum.map(fn {l, r} -> l <> r end)
   end
 
-  defp processPairs(pairs, line) do
+  defp processPairs(pairs) do
     uniq = Enum.dedup(pairs)
 
-    if length(uniq) >= 2 do
-      true
+    if length(uniq) < 2 do
+      false
     else
-      uniq
-      |> Enum.any?(fn x -> length(String.split(line, x)) > 2 end)
+      true
     end
   end
 
