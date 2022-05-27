@@ -1,10 +1,10 @@
 defmodule Task2 do
   @spec solution(String.t()) :: integer()
   def solution(line) do
-    solveSimpleObjects(line, 0)
+    solveSimpleObjects(line)
   end
 
-  def solveSimpleObjects(line, sum) do
+  def solveSimpleObjects(line) do
     case Regex.match?(~r/^\{[^\{\}\]\[]*\}$/, line) do
       true ->
         case String.contains?(line, "red") do
@@ -12,7 +12,7 @@ defmodule Task2 do
             0
 
           false ->
-            sum + Task1.solution(line)
+            Task1.solution(line)
         end
 
       false ->
@@ -20,40 +20,108 @@ defmodule Task2 do
 
         case simpleObjs do
           [] ->
-            solveSimpleArrays(line, sum)
+            solveSimpleArrays(line)
 
           matches ->
-            tempSum =
-              Enum.filter(matches, fn [x] -> not String.contains?(x, "red") end)
-              |> Enum.map(fn [x] -> Task1.solution(x) end)
-              |> Enum.sum()
+            # Enum.filter(matches, fn [x] -> not String.contains?(x, "red") end)
+            tempSums =
+              Enum.map(matches, fn [x] ->
+                case String.contains?(x, "red") do
+                  true ->
+                    0
 
-            solveSimpleObjects(Regex.replace(~r/\{[^\{\}\]\[]+\}/, line, "0"), sum + tempSum)
+                  false ->
+                    Task1.solution(line)
+                end
+              end)
+
+            replaced = Regex.replace(~r/\{[^\{\}\]\[]+\}/, line, "_repaced_")
+
+            solveSimpleObjects(
+              Enum.reduce(tempSums, replaced, fn x, acc ->
+                Regex.replace(~r/_replaced_/, acc, x, global: false)
+              end)
+            )
         end
     end
   end
 
-  def solveSimpleArrays(line, sum) do
+  def solveSimpleArrays(line) do
     case Regex.match?(~r/^\[[^\{\}\]\[]*\]$/, line) do
       true ->
-        sum + Task1.solution(line)
+        Task1.solution(line)
 
       false ->
         simpleArrs = Regex.scan(~r/\[[^\{\}\]\[]+\]/, line)
 
         case simpleArrs do
           [] ->
-            solveSimpleObjects(line, sum)
+            solveSimpleObjects(line)
 
           matches ->
-            tempSum =
-              Enum.map(matches, fn [x] -> Task1.solution(x) end)
-              |> Enum.sum()
+            tempSums = Enum.map(matches, fn [x] -> Task1.solution(x) end)
 
-            solveSimpleObjects(Regex.replace(~r/\[[^\{\}\]\[]+\]/, line, "0"), sum + tempSum)
+            replaced = Regex.replace(~r/\[[^\{\}\]\[]+\]/, line, "_repaced_")
+
+            solveSimpleObjects(
+              Enum.reduce(tempSums, replaced, fn x, acc ->
+                Regex.replace(~r/_replaced_/, acc, x, global: false)
+              end)
+            )
         end
     end
   end
+
+  # def solveSimpleObjects(line, sum) do
+  #   case Regex.match?(~r/^\{[^\{\}\]\[]*\}$/, line) do
+  #     true ->
+  #       case String.contains?(line, "red") do
+  #         true ->
+  #           0
+
+  #         false ->
+  #           sum + Task1.solution(line)
+  #       end
+
+  #     false ->
+  #       simpleObjs = Regex.scan(~r/\{[^\{\}\]\[]+\}/, line)
+
+  #       case simpleObjs do
+  #         [] ->
+  #           solveSimpleArrays(line, sum)
+
+  #         matches ->
+  #           tempSum =
+  #             Enum.filter(matches, fn [x] -> not String.contains?(x, "red") end)
+  #             |> Enum.map(fn [x] -> Task1.solution(x) end)
+  #             |> Enum.sum()
+
+  #           solveSimpleObjects(Regex.replace(~r/\{[^\{\}\]\[]+\}/, line, "0"), sum + tempSum)
+  #       end
+  #   end
+  # end
+
+  # def solveSimpleArrays(line, sum) do
+  #   case Regex.match?(~r/^\[[^\{\}\]\[]*\]$/, line) do
+  #     true ->
+  #       sum + Task1.solution(line)
+
+  #     false ->
+  #       simpleArrs = Regex.scan(~r/\[[^\{\}\]\[]+\]/, line)
+
+  #       case simpleArrs do
+  #         [] ->
+  #           solveSimpleObjects(line, sum)
+
+  #         matches ->
+  #           tempSum =
+  #             Enum.map(matches, fn [x] -> Task1.solution(x) end)
+  #             |> Enum.sum()
+
+  #           solveSimpleObjects(Regex.replace(~r/\[[^\{\}\]\[]+\]/, line, "0"), sum + tempSum)
+  #       end
+  #   end
+  # end
 
   # array that doesn't contain array ~r/\[[^\[\]]+\]/
   # object that doesn't contain object ~r/\{[^\{\}]+\}/
