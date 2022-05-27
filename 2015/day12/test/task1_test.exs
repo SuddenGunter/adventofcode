@@ -21,4 +21,8 @@ defmodule Task1Test do
   test ~s({}) do
     assert Task1.solution(~s({})) == 0
   end
+
+  test ~s([{ "left": "1", "right":1 }]) do
+    assert Task1.solution(~s([{ "left": "1", "right":1 }])) == 2
+  end
 end

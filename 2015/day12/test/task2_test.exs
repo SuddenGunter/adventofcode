@@ -29,4 +29,16 @@ defmodule Task2Test do
   test ~s({"f":1, "c": [{ "left": "red", "right":[1,2,3]  }] }) do
     assert Task2.solution(~s({"f":1, "c": [{ "left": "red", "right":[1,2,3]  }] })) == 1
   end
+
+  test ~s({"f":1, "c": [{ "left": "1", "right":[1,2,3], "f":"red"  }] }) do
+    assert Task2.solution(~s({"f":1, "c": [{ "left": "1", "right":[1,2,3], "f":"red"  }] })) == 1
+  end
+
+  test ~s({"f":1, "c": [{ "left": "1", "right":[-1,2,{"f":"red"}] }] }) do
+    assert Task2.solution(~s({"f":1, "c": [{ "left": "1", "right":[-1,2,{"f":"red"}] }] })) == 3
+  end
+
+  test ~s({"f":1, "c": [{ "left": "1", "right":1 }] }) do
+    assert Task2.solution(~s({"f":1, "c": [{ "left": "1", "right":1 }] })) == 3
+  end
 end
