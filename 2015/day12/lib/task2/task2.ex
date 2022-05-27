@@ -7,6 +7,8 @@ defmodule Task2 do
   def solveSimpleObjects(line) do
     case Regex.match?(~r/^\{[^\{\}\]\[]*\}$/, line) do
       true ->
+        # IO.inspect(line, label: "finish_simple_object")
+
         case String.contains?(line, "red") do
           true ->
             0
@@ -35,13 +37,19 @@ defmodule Task2 do
                 end
               end)
 
-            replaced = Regex.replace(~r/\{[^\{\}\]\[]+\}/, line, "_repaced_")
+            replaced = Regex.replace(~r/\{[^\{\}\]\[]+\}/, line, "_replaced_")
 
-            solveSimpleObjects(
+            reduced =
               Enum.reduce(tempSums, replaced, fn x, acc ->
-                Regex.replace(~r/_replaced_/, acc, x, global: false)
+                Regex.replace(~r/_replaced_/, acc, Integer.to_string(x), global: false)
               end)
-            )
+
+            # IO.write("line")
+            # IO.puts(line)
+            # IO.write("reduced")
+            # IO.puts(reduced)
+
+            solveSimpleObjects(reduced)
         end
     end
   end
@@ -49,7 +57,9 @@ defmodule Task2 do
   def solveSimpleArrays(line) do
     case Regex.match?(~r/^\[[^\{\}\]\[]*\]$/, line) do
       true ->
-        Task1.solution(line)
+        line
+        # |> IO.inspect(label: "finish_simple_array")
+        |> Task1.solution()
 
       false ->
         simpleArrs = Regex.scan(~r/\[[^\{\}\]\[]+\]/, line)
@@ -61,13 +71,20 @@ defmodule Task2 do
           matches ->
             tempSums = Enum.map(matches, fn [x] -> Task1.solution(x) end)
 
-            replaced = Regex.replace(~r/\[[^\{\}\]\[]+\]/, line, "_repaced_")
+            replaced = Regex.replace(~r/\[[^\{\}\]\[]+\]/, line, "_replaced_")
 
-            solveSimpleObjects(
+            reduced =
               Enum.reduce(tempSums, replaced, fn x, acc ->
-                Regex.replace(~r/_replaced_/, acc, x, global: false)
+                Regex.replace(~r/_replaced_/, acc, Integer.to_string(x), global: false)
               end)
-            )
+
+
+              # IO.write("line")
+              # IO.puts(line)
+              # IO.write("reduced")
+              # IO.puts(reduced)
+
+            solveSimpleObjects(reduced)
         end
     end
   end
