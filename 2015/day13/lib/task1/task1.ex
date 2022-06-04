@@ -13,32 +13,10 @@ defmodule Task1 do
     |> Enum.max()
   end
 
-
   defp permutations([]), do: [[]]
 
   defp permutations(list),
     do: for(elem <- list, rest <- permutations(list -- [elem]), do: [elem | rest])
-
-  # defp generatePermutations(arrangement, len) when len == 1 do
-  #   Enum.map(arrangement, fn x -> [x] end) |> IO.inspect()
-  # end
-
-  # defp generatePermutations(arrangement, len) do
-  #   generatePermutations(arrangement, len - 1)
-  #   |> Enum.flat_map(fn t ->
-  #     rest = Enum.filter(
-  #       arrangement,
-  #       fn e ->
-  #         not Enum.any?(t, fn j -> j == e end)
-  #       end
-  #     )
-  #     [t | [rest]]
-  #   end)
-  # end
-
-  # defp generatePermutations(arrangement) do
-  #   generatePermutations(arrangement, length(arrangement))
-  # end
 
   defp cost(arrangement, costs) do
     sum =
