@@ -13,9 +13,9 @@ defmodule Task1 do
     |> Enum.max()
   end
 
-  defp permutations([]), do: [[]]
+  def permutations([]), do: [[]]
 
-  defp permutations(list),
+  def permutations(list),
     do: for(elem <- list, rest <- permutations(list -- [elem]), do: [elem | rest])
 
   defp cost(arrangement, costs) do
