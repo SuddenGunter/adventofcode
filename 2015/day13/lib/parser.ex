@@ -22,8 +22,6 @@ defmodule Parser do
       %{Name: Enum.at(x, 0), Val: val, NameReason: Enum.at(x, length(x) - 1)}
     end)
     |> Enum.reduce(%{}, fn x, acc ->
-      IO.inspect(acc, label: "acc")
-
       Map.get_and_update(
         acc,
         x[:Name],
@@ -39,6 +37,5 @@ defmodule Parser do
       )
       |> elem(1)
     end)
-    |> IO.inspect()
   end
 end
