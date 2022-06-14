@@ -11,11 +11,6 @@ defmodule Task1 do
     |> Enum.max()
   end
 
-  # defp getPosAt(deer, second) do
-  #   iterations = div(second, deer.restTime - deer.runTime)
-  #   deer.speed * iterations * deer.runTime
-  # end
-
   defp getPosAt(deer, lastSecond) do
     getPosAt(deer, 0, :running, 0, lastSecond)
   end
