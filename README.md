@@ -2,7 +2,7 @@
 
 [Advent of code](https://adventofcode.com/) solutions.
 
-## 2021
+## 2022
 
 2/50 stars
 
