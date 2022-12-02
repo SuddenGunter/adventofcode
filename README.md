@@ -4,9 +4,9 @@
 
 ## 2022
 
-2/50 stars
+4/50 stars
 
-Languages: Go
+Languages: Go, Elixir
 
 Second AoC that I've participated in. Solved in December 2022
 
