@@ -104,7 +104,7 @@ defmodule Task1 do
 
   @spec sum_size([Fs.Dir]) :: integer()
   defp sum_size(dirs) do
-    Enum.map(dirs, fn x -> x.name end) |> IO.inspect()
+    Enum.map(dirs, fn x -> x.name end)
 
     dirs
     |> Enum.map(fn x -> x.size end)
