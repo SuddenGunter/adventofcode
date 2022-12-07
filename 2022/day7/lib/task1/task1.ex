@@ -2,6 +2,7 @@ defmodule Task1 do
   @spec solution([String.t()]) :: integer()
   def solution(contents) do
     contents
+    # drop cd
     |> Enum.drop(1)
     |> build_tree()
     |> count_dirs_size()
@@ -28,7 +29,7 @@ defmodule Task1 do
             {:cont,
              [
                build_tree(
-                 Enum.drop_while(lines, fn l -> l != "$ cd #{dir_name}" end) |> Enum.drop(1),
+                 find_dir(lines, dir_name) |> Enum.drop(1),
                  dir_name
                )
                | acc
@@ -43,6 +44,23 @@ defmodule Task1 do
         end
       end
     end)
+  end
+
+  defp find_dir(lines, dir_name) do
+    {drop, _} =
+      Enum.reduce_while(lines, {0, 0}, fn l, {drop, depth} ->
+        if l == "$ cd #{dir_name}" && depth == 0 do
+          {:halt, {drop, depth}}
+        else
+          cond do
+            l == "$ cd .." -> {:cont, {drop + 1, depth - 1}}
+            String.starts_with?(l, "$ cd") -> {:cont, {drop + 1, depth + 1}}
+            true -> {:cont, {drop + 1, depth}}
+          end
+        end
+      end)
+
+    Enum.drop(lines, drop)
   end
 
   @spec count_dirs_size(%Fs.Dir{}) :: %Fs.Dir{}
@@ -62,25 +80,32 @@ defmodule Task1 do
 
   @spec dirs_below(%Fs.Dir{}, Integer.t()) :: [Fs.Dir]
   defp dirs_below(root, limit \\ 100_000) do
-    Enum.reduce(root.children, [], fn x, acc ->
-      node =
-        case x do
-          dir when is_struct(x, Fs.Dir) ->
-            if dir.size <= 100_000,
-              do: [dir | dirs_below(dir, limit)],
-              else: dirs_below(dir, limit)
+    res =
+      Enum.reduce(root.children, [], fn x, acc ->
+        node =
+          case x do
+            dir when is_struct(x, Fs.Dir) ->
+              dirs_below(dir, limit)
 
-          _ when is_struct(x, Fs.File) ->
-            []
-        end
+            _ when is_struct(x, Fs.File) ->
+              []
+          end
 
-      [node | acc]
-    end)
-    |> List.flatten()
+        [node | acc]
+      end)
+      |> List.flatten()
+
+    if root.size <= limit do
+      [root | res]
+    else
+      res
+    end
   end
 
   @spec sum_size([Fs.Dir]) :: integer()
   defp sum_size(dirs) do
+    Enum.map(dirs, fn x -> x.name end) |> IO.inspect()
+
     dirs
     |> Enum.map(fn x -> x.size end)
     |> Enum.sum()
