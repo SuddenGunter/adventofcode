@@ -4,7 +4,7 @@
 
 ## 2022
 
-14/50 stars
+16/50 stars
 
 Languages: Go, Elixir
 
