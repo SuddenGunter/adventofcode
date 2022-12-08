@@ -5,17 +5,18 @@ defmodule Task1 do
 
     transposed = transpose(input)
 
-    col_mins = rows_mins(transposed)
+    col_mins = rows_mins(transposed) |> as_rows_mins()
 
-    col_mins_swapped = as_rows_mins(col_mins)
+    len_invisible =
+      MapSet.intersection(rows_mins, col_mins)
+      |> MapSet.to_list()
+      |> Enum.filter(fn {row, col} -> row != 0 and col != 0 end)
+      |> length()
 
-    MapSet.intersection(rows_mins, col_mins_swapped)
-    |> MapSet.to_list()
-    |> Enum.filter(fn {row, col} -> row != 0 and col != 0 end)
-    |> length()
+    length(input) * length(transposed) - len_invisible
   end
 
-  @spec rows_mins([[integer()]]) :: MapSet
+  @spec rows_mins([[integer()]]) :: MapSet.t()
   defp rows_mins(matrix) do
     mapped =
       Enum.with_index(matrix, fn e, i -> {i, e} end)
@@ -26,7 +27,7 @@ defmodule Task1 do
     end)
   end
 
-  @spec row_mins([integer()], integer(), integer(), integer()) :: MapSet
+  @spec row_mins([integer()], pos_integer(), integer(), pos_integer()) :: MapSet.t()
   defp row_mins(row, dropped, known_max_left, row_ix) do
     if length(row) == 1 do
       MapSet.new()
@@ -51,7 +52,7 @@ defmodule Task1 do
     |> Enum.map(&Tuple.to_list/1)
   end
 
-  @spec as_rows_mins(MapSet) :: MapSet
+  @spec as_rows_mins(MapSet.t()) :: MapSet.t()
   defp as_rows_mins(col_mins) do
     MapSet.to_list(col_mins)
     |> Enum.map(fn {r, c} -> {c, r} end)

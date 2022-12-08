@@ -1,6 +1,6 @@
 defmodule Day8.CLI do
   def main(_args) do
-    case Input.read("demo.data.txt", &Parser.data/1) do
+    case Input.read("data.txt", &Parser.data/1) do
       {:ok, contents} -> solve(contents)
       {:error, reason} -> IO.puts(reason)
     end
