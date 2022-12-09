@@ -5,12 +5,50 @@ defmodule Task2 do
 
   @spec solution([]) :: integer()
   def solution(commands) do
-    Range.new(1, 9)
-    |> Enum.reduce(commands, fn _, acc ->
-      history = simulation(acc)
-      as_commands(history)
+    mr = Range.new(1, 8)
+    |> Enum.reduce(%{ commands: commands, log: Map.new()} , fn i, acc ->
+      res = simulation(Map.get(acc, :commands))
+      history = Map.get(res, :history) |> Enum.reverse()
+      %{commands: as_commands(history), log: Map.put(Map.get(acc, :log), Map.get(res, :t_pos), i)}
     end)
-    |> Task1.solution()
+
+    IO.inspect(Map.get(mr, :commands))
+    debug_map(Map.get(mr, :log))
+
+    case Map.get(mr, :commands) do
+      [] -> 1
+      x -> Task1.solution(x)
+    end
+
+    # |> case do
+    #   [] -> 1
+    #   x -> Task1.solution(x)
+    # end
+  end
+
+  defp debug_map(m) do
+    IO.puts("")
+
+    Range.new(16, -16)
+    |> Enum.each(fn x ->
+      draw_line(x, m)
+    end)
+
+    IO.puts("")
+  end
+
+  defp draw_line(x, m) do
+    Range.new(-16, 16)
+    |> Enum.each(fn y ->
+      found = Map.get(m, {y, x})
+      case {y, x} do
+        {0, 0} -> IO.write("S")
+        _ when found != nil -> IO.write(found)
+        _ -> IO.write(".")
+      end
+    end)
+
+    IO.write("\n")
   end
 
   defp as_commands(history) do
@@ -24,49 +62,22 @@ defmodule Task2 do
         {1, 1} -> :UR
         {-1, 1} -> :UL
         {1, -1} -> :DR
-        {-1, -1} -> :LR
+        {-1, -1} -> :DL
       end
-      # x_mov =
-      #   case x do
-      #     1 -> [{:R, 1}]
-      #     -1 -> [{:R, 1}]
-      #     0 -> []
-      #   end
-
-      # y_mov =
-      #   case y do
-      #     1 -> [{:U, 1}]
-      #     -1 -> [{:D, 1}]
-      #     0 -> []
-      #   end
-
-      [x_mov | y_mov]
     end)
-    |> List.flatten()
   end
 
-  @spec simulation([]) :: []
+  # @spec simulation([]) :: []
   defp simulation(commands) do
     commands
-    |> unravel()
     |> process()
-    |> Enum.reverse()
-  end
-
-  # transforms "U 2, L 1" to "U U L"
-  defp unravel(commands) do
-    commands
-    |> Enum.map(fn {x, num} ->
-      Range.new(1, num)
-      |> Enum.map(fn _ -> x end)
-    end)
-    |> List.flatten()
+    # |> Enum.reverse()
   end
 
   defp process(commands) do
     commands
     |> Enum.reduce(%State{}, &step/2)
-    |> Map.get(:history)
+    # |> Map.get(:history)
   end
 
   @spec step(atom(), %State{}) :: %State{}
@@ -74,7 +85,6 @@ defmodule Task2 do
     h_pos = next_h_pos(acc.h_pos, cmd)
     t_pos = next_t_pos(acc.t_pos, h_pos)
 
-    # debug_step(h_pos, t_pos)
     diff_step = diff(acc.t_pos, t_pos)
 
     history_step =
@@ -127,30 +137,5 @@ defmodule Task2 do
       n when n < 0 -> -1
       _ -> 0
     end
-  end
-
-  defp debug_step(h, t) do
-    IO.puts("")
-
-    Range.new(6, 0)
-    |> Enum.each(fn x ->
-      draw_line(x, h, t)
-    end)
-
-    IO.puts("")
-  end
-
-  defp draw_line(x, h, t) do
-    Range.new(0, 6)
-    |> Enum.each(fn y ->
-      case {y, x} do
-        {0, 0} -> IO.write("S")
-        n when n == h -> IO.write("H")
-        n when n == t -> IO.write("T")
-        _ -> IO.write(".")
-      end
-    end)
-
-    IO.write("\n")
   end
 end

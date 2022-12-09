@@ -5,22 +5,38 @@ defmodule Task1 do
 
   @spec solution([]) :: integer()
   def solution(commands) do
-    commands
-    |> unravel()
+    m = commands
     |> process()
-    |> MapSet.to_list()
-    |> length()
+      #|> IO.inspect()
+    debug_map(m)
+    m |> MapSet.to_list() |> length()
   end
 
-  # transforms "U 2, L 1" to "U U L"
-  defp unravel(commands) do
-    commands
-    |> Enum.map(fn {x, num} ->
-      Range.new(1, num)
-      |> Enum.map(fn _ -> x end)
+  defp debug_map(m) do
+    IO.puts("")
+
+    Range.new(16, -16)
+    |> Enum.each(fn x ->
+      draw_line(x, m)
     end)
-    |> List.flatten()
+
+    IO.puts("")
   end
+
+  defp draw_line(x, m) do
+    Range.new(-16, 16)
+    |> Enum.each(fn y ->
+      found = MapSet.member?(m, {y,x})
+      case {y, x} do
+        {0, 0} -> IO.write("S")
+        _ when found ->  IO.write("#")
+        _ -> IO.write(".")
+      end
+    end)
+
+    IO.write("\n")
+  end
+
 
   defp process(commands) do
     commands
@@ -32,8 +48,6 @@ defmodule Task1 do
   defp step(cmd, acc) do
     h_pos = next_h_pos(acc.h_pos, cmd)
     t_pos = next_t_pos(acc.t_pos, h_pos)
-
-    # debug_step(h_pos, t_pos)
 
     %State{
       history: MapSet.put(acc.history, t_pos),
@@ -49,6 +63,10 @@ defmodule Task1 do
       :R -> {x + 1, y}
       :L -> {x - 1, y}
       :D -> {x, y - 1}
+      :UR -> {x + 1, y + 1}
+      :UL -> {x - 1, y + 1}
+      :DR -> {x + 1, y - 1}
+      :DL -> {x - 1, y - 1}
     end
   end
 
@@ -70,30 +88,5 @@ defmodule Task1 do
       n when n < 0 -> -1
       _ -> 0
     end
-  end
-
-  defp debug_step(h, t) do
-    IO.puts("")
-
-    Range.new(6, 0)
-    |> Enum.each(fn x ->
-      draw_line(x, h, t)
-    end)
-
-    IO.puts("")
-  end
-
-  defp draw_line(x, h, t) do
-    Range.new(0, 6)
-    |> Enum.each(fn y ->
-      case {y, x} do
-        {0, 0} -> IO.write("S")
-        n when n == h -> IO.write("H")
-        n when n == t -> IO.write("T")
-        _ -> IO.write(".")
-      end
-    end)
-
-    IO.write("\n")
   end
 end
