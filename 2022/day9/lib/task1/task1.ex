@@ -5,43 +5,16 @@ defmodule Task1 do
 
   @spec solution([]) :: integer()
   def solution(commands) do
-    m = commands
+    commands
     |> process()
-      #|> IO.inspect()
-    debug_map(m)
-    m |> MapSet.to_list() |> length()
+    |> length()
   end
-
-  defp debug_map(m) do
-    IO.puts("")
-
-    Range.new(16, -16)
-    |> Enum.each(fn x ->
-      draw_line(x, m)
-    end)
-
-    IO.puts("")
-  end
-
-  defp draw_line(x, m) do
-    Range.new(-16, 16)
-    |> Enum.each(fn y ->
-      found = MapSet.member?(m, {y,x})
-      case {y, x} do
-        {0, 0} -> IO.write("S")
-        _ when found ->  IO.write("#")
-        _ -> IO.write(".")
-      end
-    end)
-
-    IO.write("\n")
-  end
-
 
   defp process(commands) do
     commands
     |> Enum.reduce(%State{}, &step/2)
     |> Map.get(:history)
+    |> MapSet.to_list()
   end
 
   @spec step(atom(), %State{}) :: %State{}
