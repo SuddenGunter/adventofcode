@@ -12,7 +12,7 @@ defmodule Parser do
 
   defp read_command(l) do
     case String.split(l, " ") do
-      [_ | [arg]] -> {:addx, as_int(arg)}
+      [_, arg] -> {:addx, as_int(arg)}
       [_] -> {:noop}
     end
   end

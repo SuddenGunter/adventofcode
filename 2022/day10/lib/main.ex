@@ -1,6 +1,6 @@
 defmodule Day10.CLI do
   def main(_args) do
-    File.stream!("demo.data.txt") |> Parser.lines() |> solve()
+    File.stream!("data.txt") |> Parser.data() |> solve()
     :ok
   end
 
