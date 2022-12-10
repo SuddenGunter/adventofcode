@@ -8,7 +8,7 @@ defmodule Day10.CLI do
     IO.write("task #1 solution: ")
     Task1.solution(contents) |> IO.puts()
 
-    IO.write("task #2 solution: ")
-    Task2.solution(contents) |> IO.puts()
+    IO.puts("task #2 solution: ")
+    Task2.solution(contents)
   end
 end

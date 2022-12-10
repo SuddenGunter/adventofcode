@@ -5,7 +5,7 @@ defmodule Parser do
     |> Stream.map(&String.trim/1)
   end
 
-  @spec lines(Stream.t()) :: Stream.t()
+  @spec data(Stream.t()) :: Stream.t()
   def data(lines) do
     lines |> Stream.map(&read_command/1)
   end
