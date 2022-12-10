@@ -21,9 +21,6 @@ defmodule Task2 do
     |> Stream.with_index(1)
     |> Stream.map(fn {cmd, cycle} -> {cycle, cmd} end)
     |> Enum.reduce(State.new(), &process_cycle/2)
-    |> Map.get(:interesting_steps)
-    |> Map.values()
-    |> Enum.sum()
   end
 
   defp process_cycle({cycle, cmd}, state) do
