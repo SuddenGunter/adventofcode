@@ -15,7 +15,8 @@ defmodule Parser do
     id = first_integer(Enum.at(lines, 0))
 
     items =
-      Regex.run(~r/(\d+)/, Enum.at(lines, 1))
+      Regex.scan(~r/\d+/, Enum.at(lines, 1))
+      |> List.flatten()
       |> Enum.map(fn x ->
         {n, _} = Integer.parse(x)
         n

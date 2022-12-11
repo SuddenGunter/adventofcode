@@ -31,7 +31,7 @@ defmodule Task1 do
     |> Map.get(:inspects)
     |> Map.values()
     |> Enum.sort()
-    |> Enum.take(2)
+    |> Enum.take(-2)
     |> Enum.reduce(1, fn x, acc -> x * acc end)
   end
 
@@ -49,7 +49,7 @@ defmodule Task1 do
         result = monkey.operation.(x)
         level = div(result, 3)
         target = monkey.test.(level)
-        Map.update(acc, target, [], fn ex -> [level] ++ ex end)
+        Map.update(acc, target, [level], fn ex -> [level] ++ ex end)
       end)
 
     updated_monkey = %{monkey | items: []}
@@ -61,10 +61,13 @@ defmodule Task1 do
           [updated_monkey] ++ Enum.drop(state.monkeys, monkey.id + 1),
       in_flight: new_in_flight
     }
+
+    # |> IO.inspect(label: "state_after_turn #{monkey.id}", charlists: :as_lists)
   end
 
   defp process_in_flight(monkey, in_flight) do
     {delivered, m} = Map.pop(in_flight, monkey.id, [])
+
     {monkey.items ++ delivered, m}
   end
 end

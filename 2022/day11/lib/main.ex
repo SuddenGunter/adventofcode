@@ -1,6 +1,6 @@
 defmodule Day11.CLI do
   def main(_args) do
-    File.stream!("demo.data.txt") |> Parser.data() |> solve()
+    File.stream!("data.txt") |> Parser.data() |> solve()
     :ok
   end
 
@@ -9,6 +9,6 @@ defmodule Day11.CLI do
     Task1.solution(contents) |> IO.puts()
 
     IO.write("task #2 solution: ")
-    Task1.solution(contents) |> IO.puts()
+    Task2.solution(contents) |> IO.puts()
   end
 end
