@@ -10,7 +10,7 @@ defmodule Parser do
     lines |> Enum.chunk_every(7) |> Enum.map(fn l -> init_monkey(l) end)
   end
 
-  @spec init_monkey([String.t()]) :: Monkey.t()
+  @spec init_monkey([String.t()]) :: {Monkey.t(), integer()}
   defp init_monkey(lines) do
     id = first_integer(Enum.at(lines, 0))
 
@@ -23,9 +23,9 @@ defmodule Parser do
       end)
 
     operation = parse_op(Enum.at(lines, 2))
-    test = parse_test(Enum.at(lines, 3), Enum.at(lines, 4), Enum.at(lines, 5))
+    {test, test_num} = parse_test(Enum.at(lines, 3), Enum.at(lines, 4), Enum.at(lines, 5))
 
-    Monkey.new(id, items, operation, test)
+    Monkey.new(id, items, operation, test, test_num)
   end
 
   @spec parse_op(String.t()) :: (integer() -> integer())
@@ -51,7 +51,7 @@ defmodule Parser do
     end
   end
 
-  @spec parse_test(String.t(), String.t(), String.t()) :: (integer() -> integer())
+  @spec parse_test(String.t(), String.t(), String.t()) :: {(integer() -> integer()), integer()}
   defp parse_test(s, success, fail) do
     [_, val] = Regex.run(~r/divisible by (\d+)/, s)
     {n, _} = Integer.parse(val)
@@ -59,13 +59,13 @@ defmodule Parser do
     if_true = first_integer(success)
     if_fail = first_integer(fail)
 
-    fn x ->
-      if rem(x, n) == 0 do
-        if_true
-      else
-        if_fail
-      end
-    end
+    {fn x ->
+       if rem(x, n) == 0 do
+         if_true
+       else
+         if_fail
+       end
+     end, n}
   end
 
   @spec first_integer(String.t()) :: integer()
