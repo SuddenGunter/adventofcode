@@ -22,7 +22,7 @@ func main() {
 }
 
 func readInput() ([][]rune, error) {
-	f, err := os.Open("1data.txt")
+	f, err := os.Open("data.txt")
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
 	}
