@@ -7,15 +7,15 @@ type Edge struct {
 }
 
 type Graph struct {
-	startID   int
+	starts    []int
 	endID     int
 	Adjacency map[int][]Edge
 }
 
 func NewGraph(input [][]rune) *Graph {
 	vertexID := 0
-	graph := Graph{Adjacency: make(map[int][]Edge)}
-	graph.findStart(input)
+	graph := Graph{Adjacency: make(map[int][]Edge), starts: make([]int, 0, 1)}
+	graph.findStarts(input)
 	graph.findEnd(input)
 	for vPos := range input {
 		for hPos := range input[vPos] {
@@ -32,8 +32,8 @@ func (g *Graph) VerticesCount() int {
 	return len(g.Adjacency)
 }
 
-func (g *Graph) Start() int {
-	return g.startID
+func (g *Graph) Start() []int {
+	return g.starts
 }
 
 func (g *Graph) End() int {
@@ -68,11 +68,23 @@ func (g *Graph) tryAdd(adj *[]Edge, vertex rune, vertexID int, input [][]rune, h
 	}
 }
 
-func (g *Graph) findStart(input [][]rune) {
+func (g *Graph) findStarts(input [][]rune) {
 	for i := range input {
 		for j := range input[i] {
+			if input[i][j] == 'a' {
+				g.starts = append(g.starts, coordinatesToID(input, i, j))
+			}
+
 			if input[i][j] == 'S' {
-				g.startID = coordinatesToID(input, i, j)
+				l := len(g.starts)
+				if l == 0 {
+					g.starts = append(g.starts, coordinatesToID(input, i, j))
+				} else {
+					first := g.starts[0]
+					g.starts[0] = coordinatesToID(input, i, j)
+					g.starts = append(g.starts, first)
+				}
+
 				input[i][j] = 'a'
 			}
 		}

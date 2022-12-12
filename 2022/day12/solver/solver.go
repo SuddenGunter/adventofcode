@@ -1,17 +1,48 @@
-package task1
+package solver
 
 import (
 	"aoc-2022-day12/graph"
 	"math"
 )
 
-type Solver struct {
+func SolveTask(g *graph.Graph, num int) int {
+	switch num {
+	case 1:
+		s := &dijkstraSolver{}
+		start := g.Start()[0]
+		return s.solve(g, start)
+	case 2:
+		shortestPaths := make([]int, 0)
+		for _, start := range g.Start() {
+			s := &dijkstraSolver{}
+			res := s.solve(g, start)
+			shortestPaths = append(shortestPaths, res)
+		}
+
+		return min(shortestPaths)
+	default:
+		panic("unexpected task")
+	}
+}
+
+func min(paths []int) int {
+	minP := math.MaxInt
+	for _, v := range paths {
+		if v < minP {
+			minP = v
+		}
+	}
+
+	return minP
+}
+
+type dijkstraSolver struct {
 	edgeTo  []*graph.Edge
 	distTo  []int
 	visited map[int]struct{}
 }
 
-func (s *Solver) Solve(g *graph.Graph) int {
+func (s *dijkstraSolver) solve(g *graph.Graph, start int) int {
 	// edge that is the latest part of a shortest path to vertex.
 	s.edgeTo = make([]*graph.Edge, g.VerticesCount())
 	// shortest distance to a vertex.
@@ -21,7 +52,7 @@ func (s *Solver) Solve(g *graph.Graph) int {
 	for i := 0; i < g.VerticesCount(); i++ {
 		s.distTo[i] = math.MaxInt
 	}
-	v := g.Start()
+	v := start
 	s.distTo[v] = 0
 
 	for {
@@ -35,7 +66,7 @@ func (s *Solver) Solve(g *graph.Graph) int {
 	return s.distTo[g.End()]
 }
 
-func (s *Solver) relax(g *graph.Graph, v int) int {
+func (s *dijkstraSolver) relax(g *graph.Graph, v int) int {
 	s.visited[v] = struct{}{}
 
 	for _, edge := range g.Adjacency[v] {
