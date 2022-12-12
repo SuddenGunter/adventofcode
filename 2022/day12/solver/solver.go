@@ -3,6 +3,7 @@ package solver
 import (
 	"aoc-2022-day12/graph"
 	"math"
+	"sync"
 )
 
 func SolveTask(g *graph.Graph, num int) int {
@@ -13,11 +14,23 @@ func SolveTask(g *graph.Graph, num int) int {
 		return s.solve(g, start)
 	case 2:
 		shortestPaths := make([]int, 0)
+		results := make(chan int)
+		go func() {
+			for v := range results {
+				shortestPaths = append(shortestPaths, v)
+			}
+		}()
+		wg := sync.WaitGroup{}
 		for _, start := range g.Start() {
-			s := &dijkstraSolver{}
-			res := s.solve(g, start)
-			shortestPaths = append(shortestPaths, res)
+			wg.Add(1)
+			go func(startV int) {
+				s := &dijkstraSolver{}
+				results <- s.solve(g, startV)
+				wg.Done()
+			}(start)
 		}
+		wg.Wait()
+		close(results)
 
 		return min(shortestPaths)
 	default:
