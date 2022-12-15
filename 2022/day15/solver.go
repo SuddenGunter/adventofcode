@@ -6,7 +6,10 @@ import (
 	"sort"
 )
 
-const row = 2000000
+const (
+	row          = 2000000          //10 for test data
+	sizeX, sizeY = 4000000, 4000000 //20, 20 for test data
+)
 
 func SolveTask(t *Task, num int) int {
 	switch num {
@@ -18,10 +21,37 @@ func SolveTask(t *Task, num int) int {
 		forbiddenPointsCount := countForbiddenPoints(intervals)
 		return forbiddenPointsCount - beacons
 	case 2:
-		return 0
+		coordinates := findBeaconCoordinates(t)
+		return coordinates.X*4000000 + coordinates.Y
 	default:
 		panic("unexpected task")
 	}
+}
+
+// inspired by https://github.com/jasontconnell/advent/blob/master/2022/15/main.go
+func findBeaconCoordinates(t *Task) Point {
+	for y := 0; y <= sizeY; y++ {
+		for x := 0; x <= sizeX; x++ {
+			forbiddenByScanner := false
+			for _, p := range t.Pairs {
+				distToCurrent := manhattanDistance(p.Sensor, Point{X: x, Y: y})
+				// distToBeacon acts like a sensor "strenght"
+				distToBeacon := manhattanDistance(p.Sensor, p.Beacon)
+				if distToCurrent <= distToBeacon {
+					forbiddenByScanner = true
+					skip := distToBeacon - distToCurrent
+					x += skip // skipping part of current row covered by sensor
+					break
+				}
+			}
+
+			if !forbiddenByScanner {
+				return Point{X: x, Y: y}
+			}
+		}
+	}
+
+	panic("solution not found")
 }
 
 func cutOutBeacons(t *Task, intervals []Interval) int {
