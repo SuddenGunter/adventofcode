@@ -1,7 +1,6 @@
 package main
 
 import (
-	"golang.org/x/exp/constraints"
 	"math"
 	"sort"
 )
@@ -138,22 +137,6 @@ func getForbiddenIntervals(t *Task) []Interval {
 	}
 
 	return forbidden
-}
-
-func min[T constraints.Ordered](a, b T) T {
-	if a <= b {
-		return a
-	} else {
-		return b
-	}
-}
-
-func max[T constraints.Ordered](a, b T) T {
-	if a >= b {
-		return a
-	} else {
-		return b
-	}
 }
 
 func manhattanDistance(from Point, to Point) int {
