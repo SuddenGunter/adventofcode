@@ -1,0 +1,22 @@
+package main
+
+import "fmt"
+
+func SolveTask(t *Task, assignement int) string {
+	switch assignement {
+	case 1:
+		return fmt.Sprint(solveTask1())
+	case 2:
+		return fmt.Sprint(solveTask2())
+	default:
+		return "unknown assignement"
+	}
+}
+
+func solveTask1() int {
+	return 0
+}
+
+func solveTask2() int {
+	return 0
+}

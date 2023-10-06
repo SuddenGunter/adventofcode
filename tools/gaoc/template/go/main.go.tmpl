@@ -1,0 +1,46 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func main() {
+	data, err := readInput()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf("task 1 answer: %v\n", SolveTask(data.Clone(), 1))
+	fmt.Printf("task 2 answer: %v\n", SolveTask(data.Clone(), 2))
+}
+
+func readInput() (*Task, error) {
+	f, err := os.Open("data.txt")
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+
+	lines := make([]interface{}, 0)
+	s := bufio.NewScanner(f)
+	for s.Scan() {
+		if s.Text() == "" {
+			continue
+		}
+
+		lines = append(lines, parseLine(s.Text()))
+	}
+
+	if err = s.Err(); err != nil {
+		return nil, fmt.Errorf("failed to scan file: %w", err)
+	}
+
+	return &Task{
+		lines: lines,
+	}, nil
+}
+
+func parseLine(line string) interface{} {
+	return nil
+}
