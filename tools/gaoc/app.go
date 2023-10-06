@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"fmt"
 	"io"
 	"io/fs"
+	"net/http"
 	"os"
 	"path"
 	"strings"
 	"text/template"
+	"time"
 )
 
 type App struct {
@@ -37,6 +40,10 @@ func (a *App) Run() {
 	}
 
 	fmt.Println(cfg)
+
+	if cfg.SessionToken != "" {
+		cfg.Input = a.getInput(cfg.Day, cfg.Year, cfg.SessionToken)
+	}
 
 	a.write(embedfs, cfg)
 }
@@ -140,6 +147,39 @@ func (a *App) write(f embed.FS, cfg Config) {
 			a.Fatal(err)
 		}
 	}
+}
+
+func (a *App) getInput(day, year int, token string) string {
+	timeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(timeout, http.MethodGet, fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", year, day), nil)
+	if err != nil {
+		a.Fatal(err)
+	}
+
+	req.AddCookie(&http.Cookie{
+		Name:  "session",
+		Value: token,
+	})
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		a.Fatal(err)
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		a.Fatal(fmt.Errorf("unexpected status code: %d", resp.StatusCode))
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		a.Fatal(err)
+	}
+
+	return string(data)
 }
 
 func filter(vs []string, f func(string) bool) []string {
