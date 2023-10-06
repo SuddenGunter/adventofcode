@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -19,14 +20,19 @@ func (c Config) String() string {
 	return fmt.Sprintf("generating template. day: %d, year: %d, template: %s", c.Day, c.Year, c.Template)
 }
 
-func InitConfig() Config {
-	year := flag.Int("y", time.Now().Year(), "year of the AoC challenge")
-	day := flag.Int("d", time.Now().Day(), "day of the AoC challenge")
-	template := flag.String("t", "go", "template to use for generated code")
-	output := flag.String("o", "", "output directory")
-	st := flag.String("st", "", "AoC session token")
+func InitConfig() (Config, error) {
+	fset := flag.NewFlagSet("gen", flag.ExitOnError)
+	year := fset.Int("y", time.Now().Year(), "year of the AoC challenge")
+	day := fset.Int("d", time.Now().Day(), "day of the AoC challenge")
+	template := fset.String("t", "go", "template to use for generated code")
+	output := fset.String("o", "", "output directory")
+	st := fset.String("st", "", "AoC session token")
 
-	flag.Parse()
+	if len(os.Args) < 2 || os.Args[1] != "gen" {
+		return Config{}, fmt.Errorf("unsupported mode. To generate code use 'gaoc gen'")
+	} else {
+		fset.Parse(os.Args[2:])
+	}
 
 	return Config{
 		Day:          *day,
@@ -34,5 +40,5 @@ func InitConfig() Config {
 		Template:     *template,
 		Output:       *output,
 		SessionToken: *st,
-	}
+	}, nil
 }

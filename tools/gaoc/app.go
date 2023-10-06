@@ -14,8 +14,7 @@ import (
 	"time"
 )
 
-type App struct {
-}
+type App struct{}
 
 func (a *App) Run() {
 	dir, err := embedfs.ReadDir("template")
@@ -30,7 +29,11 @@ func (a *App) Run() {
 
 	fmt.Println("supported templates:", names)
 
-	cfg := InitConfig()
+	cfg, err := InitConfig()
+	if err != nil {
+		a.Fatal(err)
+	}
+
 	if _, ok := names[cfg.Template]; !ok {
 		a.Fatal(fmt.Errorf("template %s not found", cfg.Template))
 	}
@@ -54,7 +57,7 @@ func (a *App) Fatal(err error) {
 }
 
 func (a *App) write(f embed.FS, cfg Config) {
-	err := os.Mkdir(cfg.Output, 0755)
+	err := os.Mkdir(cfg.Output, 0o755)
 	if err != nil {
 		a.Fatal(err)
 	}
@@ -82,7 +85,7 @@ func (a *App) write(f embed.FS, cfg Config) {
 		}
 
 		if d.IsDir() {
-			return os.Mkdir(realPath, 0755)
+			return os.Mkdir(realPath, 0o755)
 		}
 
 		// Create the file
