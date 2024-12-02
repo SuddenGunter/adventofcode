@@ -8,11 +8,14 @@ defmodule Task1 do
 
   @spec safe_level?([integer()]) :: boolean()
   def safe_level?([h | [next | _]] = data) do
-    cond do
-      h > next -> safe_level?(data, :dec)
-      h < next -> safe_level?(data, :inc)
-      h == next -> false
-    end
+    safe =
+      cond do
+        h > next -> safe_level?(data, :dec)
+        h < next -> safe_level?(data, :inc)
+        h == next -> false
+      end
+
+    safe
   end
 
   @spec safe_level?([integer()], atom()) :: boolean()
