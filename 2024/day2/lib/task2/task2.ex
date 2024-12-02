@@ -6,21 +6,6 @@ defmodule Task2 do
     |> Enum.count(fn x -> x end)
   end
 
-  # @spec safe_level?([integer()]) :: boolean()
-  # def safe_level?(data) do
-  #   {_, x} =
-  #     Enum.reduce(
-  #       data,
-  #       {0, []},
-  #       fn _, {i, acc} ->
-  #         {l, r} = Enum.split(data, i)
-  #         {i + 1, [[l] ++ [Enum.drop(r, 1)] ++ acc]}
-  #       end
-  #     )
-
-  #   Enum.flat_map(x, fn z -> z end)
-  # end
-
   @spec safe_level?([integer()]) :: boolean()
   def safe_level?(data) do
     res =
