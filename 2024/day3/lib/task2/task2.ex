@@ -2,26 +2,22 @@ defmodule Task2 do
   @spec solution(String.t()) :: integer()
   def solution(memory) do
     Regex.scan(~r/mul\((\d{1,3}),(\d{1,3})\)|don't\(\)|do\(\)/, memory)
-    |> interpret(:enabled, 0)
-  end
+    |> Enum.reduce(
+      {:enabled, 0},
+      fn
+        ["do()"], {_, sum} ->
+          {:enabled, sum}
 
-  defp interpret([["do()"] | t], _, acc) do
-    interpret(t, :enabled, acc)
-  end
+        ["don't()"], {_, sum} ->
+          {:disabled, sum}
 
-  defp interpret([["don't()"] | t], _, acc) do
-    interpret(t, :disabled, acc)
-  end
+        [_, _, _], {:disabled, sum} ->
+          {:disabled, sum}
 
-  defp interpret([], _, acc) do
-    acc
-  end
-
-  defp interpret([[_, _, _] | t], :disabled, acc) do
-    interpret(t, :disabled, acc)
-  end
-
-  defp interpret([[_, a, b] | t], :enabled, acc) do
-    interpret(t, :enabled, acc + String.to_integer(a) * String.to_integer(b))
+        [_, a, b], {:enabled, sum} ->
+          {:enabled, sum + String.to_integer(a) * String.to_integer(b)}
+      end
+    )
+    |> elem(1)
   end
 end
