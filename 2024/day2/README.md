@@ -1,4 +1,4 @@
-# Day 1
+# Day 2
 
 [Challenge link](https://adventofcode.com/2024/day/2).
 
