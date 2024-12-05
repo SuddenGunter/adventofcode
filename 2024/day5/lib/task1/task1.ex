@@ -12,7 +12,33 @@ defmodule Task1 do
       |> parse_rules()
       |> order_rules()
 
-    0
+    updates
+    |> Enum.map(fn x -> String.split(x, ",") |> Enum.map(&String.to_integer/1) end)
+    |> Enum.filter(fn x -> ordered?(order, x) end)
+    |> Enum.map(fn x -> Enum.at(x, div(length(x), 2)) end)
+    |> Enum.sum()
+  end
+
+  defp ordered?([], []) do
+    true
+  end
+
+  defp ordered?(_, []) do
+    true
+  end
+
+  defp ordered?([], _) do
+    false
+  end
+
+  defp ordered?([ho | order], [ht | update]) do
+    cond do
+      ho == ht ->
+        ordered?(order, update)
+
+      ho != ht ->
+        ordered?(order, [ht | update])
+    end
   end
 
   defp parse_rules(rules) do
