@@ -12,7 +12,7 @@ defmodule Task1 do
 
     updates
     |> Enum.map(fn x -> String.split(x, ",") |> Enum.map(&String.to_integer/1) end)
-    |> Enum.filter(fn x -> ordered?(order_for(all_rules, x), x) end)
+    |> Enum.filter(fn x -> order_for(all_rules, x) == x end)
     |> Enum.map(fn x -> Enum.at(x, div(length(x), 2)) end)
     |> Enum.sum()
   end
@@ -90,28 +90,6 @@ defmodule Task1 do
   defp order_for({l, r}, elements) do
     {new_l, new_r} = remove_not_contains({l, r}, elements)
     order_rules({new_l, new_r})
-  end
-
-  defp ordered?([], []) do
-    true
-  end
-
-  defp ordered?(_, []) do
-    true
-  end
-
-  defp ordered?([], _) do
-    false
-  end
-
-  defp ordered?([ho | order], [ht | update]) do
-    cond do
-      ho == ht ->
-        ordered?(order, update)
-
-      ho != ht ->
-        ordered?(order, [ht | update])
-    end
   end
 
   defp parse_rules(rules) do
