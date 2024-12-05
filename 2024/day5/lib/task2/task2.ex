@@ -12,8 +12,15 @@ defmodule Task2 do
 
     updates
     |> Enum.map(fn x -> String.split(x, ",") |> Enum.map(&String.to_integer/1) end)
-    |> Enum.filter(fn x -> ordered?(order_for(all_rules, x), x) end)
-    |> Enum.map(fn x -> Enum.at(x, div(length(x), 2)) end)
+    |> Enum.map(fn x ->
+      ordered = order_for(all_rules, x)
+
+      if not ordered?(ordered, x) do
+        Enum.at(ordered, div(length(ordered), 2))
+      else
+        0
+      end
+    end)
     |> Enum.sum()
   end
 
