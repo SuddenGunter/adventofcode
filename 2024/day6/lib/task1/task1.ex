@@ -18,7 +18,7 @@ defmodule Task1 do
 
     case at(map, next_pos) do
       :outside_of_map ->
-        visited |> MapSet.to_list |> length()
+        visited |> MapSet.to_list() |> length()
 
       :blocked ->
         change_direction(map) |> walk(visited)
@@ -54,7 +54,7 @@ defmodule Task1 do
   defp format_map(map) do
     merged = (map.empty |> MapSet.to_list()) ++ (map.blocked |> MapSet.to_list())
 
-    merged ++ [map.guard]
+    (merged ++ [map.guard])
     |> Enum.sort()
     |> Enum.chunk_by(fn {row, _} -> row end)
     |> Enum.map(fn row ->
