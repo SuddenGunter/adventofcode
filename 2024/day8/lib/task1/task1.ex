@@ -56,12 +56,4 @@ defmodule Task1 do
       ms -> %{state | letter => MapSet.put(ms, {row, col})}
     end
   end
-
-  # count total permitations with order
-  # |> String.to_charlist()
-  # |> Enum.filter(fn x -> x != ?. and x != ?\n end)
-  # |> Enum.group_by(fn x -> x end)
-  # |> Enum.map(fn {_, v} -> length(v) end)
-  # |> Enum.map(fn x -> x * (x - 1) end)
-  # |> Enum.sum()
 end
