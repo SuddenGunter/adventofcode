@@ -2,6 +2,7 @@ defmodule Task1 do
   @spec solution(String.t()) :: integer()
   def solution(input) do
     input
+    |> String.trim()
     |> String.to_charlist()
     |> Enum.map(&(&1 - ?0))
     |> Enum.with_index()
@@ -41,6 +42,7 @@ defmodule Task1 do
   end
 
   defp move(%{space: space, nums: nums} = acc) do
+    # todo: min heap to optimize
     min_space = Map.keys(space) |> Enum.min()
     max_file = Map.keys(nums) |> Enum.max()
 
