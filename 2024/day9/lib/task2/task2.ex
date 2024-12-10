@@ -1,72 +1,52 @@
 defmodule Task2 do
   @spec solution(String.t()) :: integer()
   def solution(input) do
-    input
-    |> String.trim()
-    |> String.to_charlist()
-    |> Enum.map(&(&1 - ?0))
-    |> Enum.with_index()
-    |> Enum.flat_map(fn {x, i} ->
-      type =
-        case rem(i, 2) do
-          0 -> :file
-          1 -> :space
+    {_, _, spaces, files} =
+      input
+      |> String.trim()
+      |> String.to_charlist()
+      |> Enum.map(&(&1 - ?0))
+      |> Enum.with_index()
+      |> Enum.reduce({0, 0, [], []}, fn {x, i}, {total_len, file_id, spaces, files} = acc ->
+        type =
+          case rem(i, 2) do
+            0 -> :file
+            1 -> :space
+          end
+
+        if x == 0 do
+          acc
+        else
+          case type do
+            :file ->
+              {total_len + x, file_id + 1, spaces,
+               [{total_len, total_len + x - 1, file_id}, files]}
+
+            :space ->
+              {total_len + x, file_id, [{total_len, total_len + x - 1}, spaces], files}
+          end
         end
+      end)
 
-      generate_fs_entry(type, x)
-    end)
-    |> Enum.reduce({:file, 0, []}, fn x, {state, num, arr} ->
-      case {state, x} do
-        {:file, :zero_len_space} -> {:space, num, arr}
-        {:file, :file} -> {:file, num, [num] ++ arr}
-        {:space, :file} -> {:file, num + 1, [num + 1] ++ arr}
-        {_, :space} -> {:space, num, [:space] ++ arr}
-      end
-    end)
-    |> elem(2)
-    |> Enum.reverse()
-    # |> Enum.map(fn x when is_integer(x) -> Integer.to_string(x)
-    # :space -> "."
-    # end)
-    |> Enum.with_index()
-    |> Enum.reduce(%{space: Map.new(), nums: Map.new()}, fn {x, i}, acc ->
-      case x do
-        :space -> %{acc | space: Map.put(acc.space, i, :space)}
-        num when is_integer(num) -> %{acc | nums: Map.put(acc.nums, i, num)}
-      end
-    end)
-    |> move()
-    |> Map.get(:nums)
-    |> Enum.map(fn {k, v} -> k * v end)
-    |> Enum.sum()
+    move(spaces |> Enum.reverse(), files)
   end
 
-  defp move(%{space: space, nums: nums} = acc) do
-    min_space = Map.keys(space) |> Enum.min()
-    max_file = Map.keys(nums) |> Enum.max()
-
-    if min_space > max_file do
-      acc
-    else
-      new_nums =
-        Map.put(acc.nums, min_space, Map.get(nums, max_file))
-        |> Map.delete(max_file)
-
-      new_space = Map.delete(space, min_space)
-
-      move(%{space: new_space, nums: new_nums})
-    end
+  defp move(_, []) do
+    moved_files
   end
 
-  defp generate_fs_entry(:file, 0) do
-    throw("unexpected")
-  end
+  defp move(spaces, files) do
+    {from, to, fid} = Enum.at(0)
+    new_files = Enum.drop(files, 1)
 
-  defp generate_fs_entry(:space, 0) do
-    [:zero_len_space]
-  end
+    # store spaces in min heap by pos
+    # iterate over spaces to find first where val > needed space
+    # remove from min_heap
+    # put file into moved_files
+    # if any space left over put back into min_heap
+    # if file not moved - copy original file into moved_files
 
-  defp generate_fs_entry(type, x) do
-    List.duplicate(type, x)
+
+    move(new_spaces, new_files)
   end
 end
