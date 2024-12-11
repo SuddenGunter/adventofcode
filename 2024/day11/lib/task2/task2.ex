@@ -6,23 +6,29 @@ defmodule Task2 do
     |> Enum.at(0)
     |> String.split(" ", trim: true)
     |> Enum.map(&String.to_integer/1)
-    |> Enum.flat_map(fn x -> blink(x, 75) end)
-    |> Enum.count()
+    |> Enum.map(fn x -> blink(x, 75) end)
+    |> Enum.sum()
   end
 
   def blink(x, 0) do
-    x
+    length(x)
   end
 
   def blink([], _) do
-    []
+    0
   end
 
   def blink([x | tail], num) do
-    blink(x, num) ++ blink(tail, num)
+    blink_memo(x, num) + blink(tail, num)
   end
 
-  def blink(x, num) when is_integer(x) do
+  def blink(x, num) do
+    blink_memo(x, num)
+  end
+
+  use Memoize
+
+  defmemo blink_memo(x, num) when is_integer(x) do
     case x do
       0 ->
         blink([1], num - 1)
