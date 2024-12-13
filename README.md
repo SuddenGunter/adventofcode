@@ -2,6 +2,14 @@
 
 [Advent of code](https://adventofcode.com/) solutions.
 
+## 2024
+
+26/50 stars
+
+Languages: Elixir
+
+Solved in December 2024
+
 ## 2022
 
 30/50 stars
