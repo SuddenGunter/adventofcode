@@ -107,7 +107,7 @@ defmodule Task2 do
     end
   end
 
-  defp shiftable_yaxis?(map, [], offset, dedup) do
+  defp shiftable_yaxis?(_map, [], _offset, dedup) do
     {true, dedup}
   end
 
