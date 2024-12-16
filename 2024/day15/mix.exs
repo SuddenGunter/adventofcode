@@ -3,7 +3,7 @@ defmodule Dayt.MixProject do
 
   def project do
     [
-      app: :day14,
+      app: :day15,
       version: "0.1.0",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
@@ -15,13 +15,13 @@ defmodule Dayt.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {Day14.CLI, []},
+      mod: {Day15.CLI, []},
       extra_applications: [:logger]
     ]
   end
 
   defp escript do
-    [main_module: Day14.CLI]
+    [main_module: Day15.CLI]
   end
 
   # Run "mix help deps" to learn about dependencies.

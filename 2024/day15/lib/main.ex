@@ -1,4 +1,4 @@
-defmodule Day14.CLI do
+defmodule Day15.CLI do
   use Application
 
   def start(_type, _args) do
