@@ -18,7 +18,7 @@ defmodule Task1 do
 
     Enum.zip(llock, lkey)
     |> Enum.reduce(true, fn {l, r}, acc ->
-      l + r < 6 and acc
+      l + r <= 5 and acc
     end)
   end
 
