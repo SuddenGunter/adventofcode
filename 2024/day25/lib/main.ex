@@ -2,7 +2,7 @@ defmodule Day25.CLI do
   use Application
 
   def start(_type, _args) do
-    case Input.read("demo.data.txt") do
+    case Input.read("data.txt") do
       {:ok, contents} -> solve(contents)
       {:error, reason} -> IO.puts(reason)
     end
