@@ -1,14 +1,29 @@
 package task1
 
 import (
-	"fmt"
+	"aoc-2024-day16/heap"
+	"log"
 	"maps"
+	"math"
 	"slices"
+)
+
+const (
+	up    = "up"
+	down  = "down"
+	left  = "left"
+	right = "right"
 )
 
 type vertex struct {
 	p         point
 	neighbors []*vertex
+}
+
+type move struct {
+	accumulated_cost int
+	vertex           *vertex
+	entry_direction  string
 }
 
 type point struct {
@@ -17,10 +32,112 @@ type point struct {
 
 func Solve(input []byte) int {
 	graph, start, finish := build_graph(input)
-	fmt.Println(graph)
-	fmt.Println(start)
-	fmt.Println(finish)
-	return 0
+	return find_cheapest_path(graph, start, finish)
+}
+
+func find_cheapest_path(graph []*vertex, start point, finish point) int {
+	h := heap.NewHeap[move]()
+	startV := must_find(graph, start)
+
+	visited := map[*vertex]int{}
+
+	h.Insert(heap.Entity[move]{
+		Move: move{
+			vertex:          startV,
+			entry_direction: up,
+		},
+	})
+
+	return traverse(h, graph, visited, finish)
+}
+
+func traverse(h *heap.Heap[move], graph []*vertex, visited map[*vertex]int, finish point) int {
+	current_move, err := h.TakeTop()
+	if err != nil {
+		// todo shandle invalid path
+		return math.MaxInt
+	}
+
+	if current_move.Move.vertex.p == finish {
+		// fmt.Println(current_path)
+		return current_move.Move.accumulated_cost
+	}
+
+	for _, x := range current_move.Move.vertex.neighbors {
+		cost, new_direction := get_move_cost(current_move.Move.vertex, x, current_move.Move.entry_direction)
+		e := heap.Entity[move]{
+			Move: move{
+				accumulated_cost: current_move.Move.accumulated_cost + cost,
+				entry_direction:  new_direction,
+				vertex:           x,
+			},
+			Priority: current_move.Move.accumulated_cost + cost,
+		}
+
+		// todo: use visited to not loop forever
+
+		h.Insert(e)
+	}
+
+	return traverse(h, graph, visited, finish)
+}
+
+func get_move_cost(from, to *vertex, current_direction string) (int, string) {
+	new_dir_point := point{
+		row: to.p.row - from.p.row,
+		col: to.p.col - from.p.col,
+	}
+
+	// assert
+	if math.Abs(float64(new_dir_point.row))+math.Abs(float64(new_dir_point.col)) != 1.0 {
+		panic("unsupported move")
+	}
+
+	dir := as_direction(new_dir_point)
+	if dir != current_direction {
+		return 1000 + 1, dir
+	} else {
+		return 0 + 1, dir
+	}
+}
+
+func as_direction(p point) string {
+	switch p {
+	case point{
+		row: 1,
+		col: 0,
+	}:
+		return down
+	case point{
+		row: -1,
+		col: 0,
+	}:
+		return up
+	case point{
+		row: 0,
+		col: 1,
+	}:
+		return right
+	case point{
+		row: 0,
+		col: -1,
+	}:
+		return left
+
+	default:
+		panic("unexpected direction")
+	}
+}
+
+func must_find(graph []*vertex, start point) *vertex {
+	for _, x := range graph {
+		if x.p == start {
+			return x
+		}
+	}
+
+	log.Fatalf("%v not found in graph", start)
+	return nil
 }
 
 func build_graph(input []byte) ([]*vertex, point, point) {
