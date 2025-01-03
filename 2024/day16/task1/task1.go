@@ -1,11 +1,12 @@
 package task1
 
 import (
-	"aoc-2024-day16/heap"
 	"log"
 	"maps"
 	"math"
 	"slices"
+
+	"aoc-2024-day16/heap"
 )
 
 const (
@@ -44,14 +45,14 @@ func find_cheapest_path(graph []*vertex, start point, finish point) int {
 	h.Insert(heap.Entity[move]{
 		Move: move{
 			vertex:          startV,
-			entry_direction: up,
+			entry_direction: right,
 		},
 	})
 
-	return traverse(h, graph, visited, finish)
+	return traverse(h, graph, make(map[point]move), visited, finish)
 }
 
-func traverse(h *heap.Heap[move], graph []*vertex, visited map[move]int, finish point) int {
+func traverse(h *heap.Heap[move], graph []*vertex, best_path map[point]move, visited map[move]int, finish point) int {
 	current_move, err := h.TakeTop()
 	if err != nil {
 		// todo shandle invalid path
@@ -63,14 +64,18 @@ func traverse(h *heap.Heap[move], graph []*vertex, visited map[move]int, finish 
 		entry_direction:  current_move.Move.entry_direction,
 		accumulated_cost: 0, // we don't use this for key, but for value
 	}] = current_move.Move.accumulated_cost
-
+	best_path[current_move.Move.vertex.p] = current_move.Move
 	if current_move.Move.vertex.p == finish {
 		// fmt.Println(current_path)
+		// log_traverse(best_path, finish)
 		return current_move.Move.accumulated_cost
 	}
 
 	for _, x := range current_move.Move.vertex.neighbors {
 		cost, new_direction := get_move_cost(current_move.Move.vertex, x, current_move.Move.entry_direction)
+		if cost == -1 {
+			continue // invalid move: 180 rotations are not allowed
+		}
 		e := heap.Entity[move]{
 			Move: move{
 				accumulated_cost: current_move.Move.accumulated_cost + cost,
@@ -91,7 +96,7 @@ func traverse(h *heap.Heap[move], graph []*vertex, visited map[move]int, finish 
 		h.Insert(e)
 	}
 
-	return traverse(h, graph, visited, finish)
+	return traverse(h, graph, best_path, visited, finish)
 }
 
 func get_move_cost(from, to *vertex, current_direction string) (int, string) {
@@ -106,6 +111,9 @@ func get_move_cost(from, to *vertex, current_direction string) (int, string) {
 	}
 
 	dir := as_direction(new_dir_point)
+	if dir == opposite(current_direction) {
+		return -1, ""
+	}
 	if dir != current_direction {
 		return 1000 + 1, dir
 	} else {
@@ -113,27 +121,57 @@ func get_move_cost(from, to *vertex, current_direction string) (int, string) {
 	}
 }
 
+func opposite(dir string) string {
+	switch dir {
+	case up:
+		return down
+	case down:
+		return up
+	case left:
+		return right
+	case right:
+		return left
+	default:
+		panic("unknown direction")
+	}
+}
+
+func as_point(dir string) point {
+	switch dir {
+	case down:
+		return point{
+			row: 1,
+			col: 0,
+		}
+	case up:
+		return point{
+			row: -1,
+			col: 0,
+		}
+	case right:
+		return point{
+			row: 0,
+			col: 1,
+		}
+	case left:
+		return point{
+			row: 0,
+			col: -1,
+		}
+	default:
+		panic("unexpected direction")
+	}
+}
+
 func as_direction(p point) string {
 	switch p {
-	case point{
-		row: 1,
-		col: 0,
-	}:
+	case point{row: 1, col: 0}:
 		return down
-	case point{
-		row: -1,
-		col: 0,
-	}:
+	case point{row: -1, col: 0}:
 		return up
-	case point{
-		row: 0,
-		col: 1,
-	}:
+	case point{row: 0, col: 1}:
 		return right
-	case point{
-		row: 0,
-		col: -1,
-	}:
+	case point{row: 0, col: -1}:
 		return left
 
 	default:

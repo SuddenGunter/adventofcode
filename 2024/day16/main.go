@@ -16,7 +16,7 @@ func main() {
 }
 
 func readFile() []byte {
-	res, err := os.ReadFile("demo.data.txt")
+	res, err := os.ReadFile("data.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
