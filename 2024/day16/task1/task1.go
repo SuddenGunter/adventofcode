@@ -39,7 +39,7 @@ func find_cheapest_path(graph []*vertex, start point, finish point) int {
 	h := heap.NewHeap[move]()
 	startV := must_find(graph, start)
 
-	visited := map[*vertex]int{}
+	visited := map[move]int{}
 
 	h.Insert(heap.Entity[move]{
 		Move: move{
@@ -51,12 +51,18 @@ func find_cheapest_path(graph []*vertex, start point, finish point) int {
 	return traverse(h, graph, visited, finish)
 }
 
-func traverse(h *heap.Heap[move], graph []*vertex, visited map[*vertex]int, finish point) int {
+func traverse(h *heap.Heap[move], graph []*vertex, visited map[move]int, finish point) int {
 	current_move, err := h.TakeTop()
 	if err != nil {
 		// todo shandle invalid path
 		return math.MaxInt
 	}
+
+	visited[move{
+		vertex:           current_move.Move.vertex,
+		entry_direction:  current_move.Move.entry_direction,
+		accumulated_cost: 0, // we don't use this for key, but for value
+	}] = current_move.Move.accumulated_cost
 
 	if current_move.Move.vertex.p == finish {
 		// fmt.Println(current_path)
@@ -74,7 +80,13 @@ func traverse(h *heap.Heap[move], graph []*vertex, visited map[*vertex]int, fini
 			Priority: current_move.Move.accumulated_cost + cost,
 		}
 
-		// todo: use visited to not loop forever
+		if already_v_cost, already_visited := visited[move{
+			accumulated_cost: 0,
+			entry_direction:  new_direction,
+			vertex:           x,
+		}]; already_visited && already_v_cost <= current_move.Move.accumulated_cost+cost {
+			continue // skip loop
+		}
 
 		h.Insert(e)
 	}
