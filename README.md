@@ -6,7 +6,7 @@
 
 33/50 stars
 
-Languages: Elixir
+Languages: Go, Elixir
 
 Solved in December 2024
 
