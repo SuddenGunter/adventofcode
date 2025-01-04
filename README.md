@@ -8,7 +8,7 @@
 
 Languages: Go, Elixir
 
-Solved in December 2024
+Solved in December 2024 - January 2025
 
 ## 2022
 
