@@ -22,9 +22,15 @@ type vertex struct {
 }
 
 type move struct {
+	accumulated_path []move
 	accumulated_cost int
 	vertex           *vertex
 	entry_direction  string
+}
+
+type vertexWithDir struct {
+	vertex          *vertex
+	entry_direction string
 }
 
 type point struct {
@@ -40,7 +46,7 @@ func find_cheapest_path(graph []*vertex, start point, finish point) int {
 	h := heap.NewHeap[move]()
 	startV := must_find(graph, start)
 
-	visited := map[move]int{}
+	visited := map[vertexWithDir]int{}
 
 	h.Insert(heap.Entity[move]{
 		Move: move{
@@ -49,25 +55,25 @@ func find_cheapest_path(graph []*vertex, start point, finish point) int {
 		},
 	})
 
-	return traverse(h, graph, make(map[point]move), visited, finish)
+	return traverse(h, graph, visited, finish)
 }
 
-func traverse(h *heap.Heap[move], graph []*vertex, best_path map[point]move, visited map[move]int, finish point) int {
+func traverse(h *heap.Heap[move], graph []*vertex, visited map[vertexWithDir]int, finish point) int {
 	current_move, err := h.TakeTop()
 	if err != nil {
 		// todo shandle invalid path
 		return math.MaxInt
 	}
 
-	visited[move{
-		vertex:           current_move.Move.vertex,
-		entry_direction:  current_move.Move.entry_direction,
-		accumulated_cost: 0, // we don't use this for key, but for value
+	visited[vertexWithDir{
+		vertex:          current_move.Move.vertex,
+		entry_direction: current_move.Move.entry_direction,
 	}] = current_move.Move.accumulated_cost
-	best_path[current_move.Move.vertex.p] = current_move.Move
 	if current_move.Move.vertex.p == finish {
-		// fmt.Println(current_path)
-		// log_traverse(best_path, finish)
+		// fmt.Println(len(current_move.Move.accumulated_path))
+		// for _, x := range current_move.Move.accumulated_path {
+		// 	fmt.Println(x.vertex.p)
+		// }
 		return current_move.Move.accumulated_cost
 	}
 
@@ -76,8 +82,13 @@ func traverse(h *heap.Heap[move], graph []*vertex, best_path map[point]move, vis
 		if cost == -1 {
 			continue // invalid move: 180 rotations are not allowed
 		}
+
+		copyMoves := make([]move, len(current_move.Move.accumulated_path))
+		copy(copyMoves, current_move.Move.accumulated_path)
+
 		e := heap.Entity[move]{
 			Move: move{
+				accumulated_path: append(copyMoves, current_move.Move), // append(current_move.Move.accumulated_path, current_move.Move),
 				accumulated_cost: current_move.Move.accumulated_cost + cost,
 				entry_direction:  new_direction,
 				vertex:           x,
@@ -85,10 +96,9 @@ func traverse(h *heap.Heap[move], graph []*vertex, best_path map[point]move, vis
 			Priority: current_move.Move.accumulated_cost + cost,
 		}
 
-		if already_v_cost, already_visited := visited[move{
-			accumulated_cost: 0,
-			entry_direction:  new_direction,
-			vertex:           x,
+		if already_v_cost, already_visited := visited[vertexWithDir{
+			entry_direction: new_direction,
+			vertex:          x,
 		}]; already_visited && already_v_cost <= current_move.Move.accumulated_cost+cost {
 			continue // skip loop
 		}
@@ -96,7 +106,7 @@ func traverse(h *heap.Heap[move], graph []*vertex, best_path map[point]move, vis
 		h.Insert(e)
 	}
 
-	return traverse(h, graph, best_path, visited, finish)
+	return traverse(h, graph, visited, finish)
 }
 
 func get_move_cost(from, to *vertex, current_direction string) (int, string) {

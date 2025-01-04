@@ -111,6 +111,10 @@ func (h *Heap[T]) IsEmpty() bool {
 	return len(h.body) == 0
 }
 
+func (h *Heap[T]) Len() int {
+	return len(h.body)
+}
+
 func (h *Heap[T]) TakeTop() (Entity[T], error) {
 	if len(h.body) == 0 {
 		return Entity[T]{}, errors.New("empty heap")
