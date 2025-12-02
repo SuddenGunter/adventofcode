@@ -58,8 +58,18 @@ defmodule Task1 do
     end
   end
 
-  defp get_next_id(l) do
-    l + 1
+  defp get_next_id(num) do
+    num_digits = digits_total(num)
+
+    case rem(num_digits, 2) do
+      1 ->
+        # number with uneven count of digits cannot be invalid id, so we skip to next decimal place, e.g. 555 -> 1000
+        # considering 1000... will never be an invalid id, we go even further, and start with all 1s - smallest "invalid id" possible, e.g. 1111 for 1000
+        Range.new(0, num_digits) |> Enum.reduce(0, fn x, acc -> acc + :math.pow(10, x) end)
+
+      0 ->
+        num + 1
+    end
   end
 
   defp digits_total(num) do
