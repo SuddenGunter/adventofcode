@@ -1,0 +1,68 @@
+defmodule Task1 do
+  @spec solution(String.t()) :: integer()
+  def solution(input) do
+    parse(input)
+    |> Enum.flat_map(&get_invalid_ids/1)
+    |> IO.inspect()
+    |> Enum.sum()
+  end
+
+  defp parse(input) do
+    String.trim(input)
+    |> String.split(",")
+    |> Enum.map(fn x ->
+      String.split(x, "-")
+      |> Enum.map(fn x ->
+        {i, _} = Integer.parse(x)
+        i
+      end)
+      |> List.to_tuple()
+    end)
+  end
+
+  defp get_invalid_ids({l, r}) do
+    get_invalid_ids({l, r}, [])
+  end
+
+  defp get_invalid_ids({l, r}, acc) when l > r do
+    acc
+  end
+
+  defp get_invalid_ids({l, r}, acc) do
+    new_acc =
+      case invalid_id?(l) do
+        true ->
+          [l] ++ acc
+
+        false ->
+          acc
+      end
+
+    # in bruteforce just +1
+    next_l = get_next_id(l)
+    get_invalid_ids({next_l, r}, new_acc)
+  end
+
+  defp invalid_id?(num) do
+    num_digits = digits_total(num)
+
+    case rem(num_digits, 2) do
+      1 ->
+        # number with uneven count of digits cannot be invalid id
+        false
+
+      0 ->
+        # compare left and right parts of number
+        rem(num, floor(:math.pow(10, num_digits / 2))) ===
+          div(num, floor(:math.pow(10, num_digits / 2)))
+    end
+  end
+
+  defp get_next_id(l) do
+    l + 1
+  end
+
+  defp digits_total(num) do
+    floor(:math.log10(num)) + 1
+  end
+end

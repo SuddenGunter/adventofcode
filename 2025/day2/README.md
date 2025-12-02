@@ -1,11 +1,11 @@
-# Day 1
+# Day 2
 
-[Challenge link](https://adventofcode.com/2025/day/1).
+[Challenge link](https://adventofcode.com/2025/day/2).
 
 How to run:
 
 Put your data into 'data.txt' (in the same directory as this readme file).
 
 ```sh
-mix escript.build && ./day1
+mix escript.build && ./day2
 ```
