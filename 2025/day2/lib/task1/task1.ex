@@ -3,7 +3,6 @@ defmodule Task1 do
   def solution(input) do
     parse(input)
     |> Enum.flat_map(&get_invalid_ids/1)
-    |> IO.inspect()
     |> Enum.sum()
   end
 
@@ -38,7 +37,6 @@ defmodule Task1 do
           acc
       end
 
-    # in bruteforce just +1
     next_l = get_next_id(l)
     get_invalid_ids({next_l, r}, new_acc)
   end
@@ -48,7 +46,7 @@ defmodule Task1 do
 
     case rem(num_digits, 2) do
       1 ->
-        # number with uneven count of digits cannot be invalid id
+        # number with odd total count of digits cannot be invalid id
         false
 
       0 ->
@@ -58,14 +56,18 @@ defmodule Task1 do
     end
   end
 
+  # mostly bruteforce, but optimized to skip ranges of odd total number of digits to neareset possible invalid id
   defp get_next_id(num) do
     num_digits = digits_total(num)
 
     case rem(num_digits, 2) do
       1 ->
-        # number with uneven count of digits cannot be invalid id, so we skip to next decimal place, e.g. 555 -> 1000
-        # considering 1000... will never be an invalid id, we go even further, and start with all 1s - smallest "invalid id" possible, e.g. 1111 for 1000
-        Range.new(0, num_digits) |> Enum.reduce(0, fn x, acc -> acc + :math.pow(10, x) end)
+        # a number with an odd total count of digits cannot be invalid id, so we skip to next decimal place, e.g. 555 -> 1000
+        # Since numbers starting with 1 and having rest of decimal places in 0 (10/1000 etc) will never be an invalid id,
+        # we can go even further, and start with pairs of 10s - smallest "invalid id" possible, e.g. 1010 for 1000
+        # but there are edge cases, like if we are starting with 10 - next invalid id is just 11, not pairs of 10s.
+        # I did not want to implement this logic
+        floor(:math.pow(10, num_digits))
 
       0 ->
         num + 1
