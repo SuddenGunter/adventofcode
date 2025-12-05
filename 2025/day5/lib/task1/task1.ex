@@ -3,9 +3,13 @@ defmodule Task1 do
   def solution(input) do
     {intervals, ingridients} =
       parse(input)
-      |> IO.inspect()
 
-    0
+    merged = merge_overlaps(intervals)
+
+    Enum.filter(ingridients, fn x ->
+      Enum.any?(merged, fn {l, r} -> x >= l and x <= r end)
+    end)
+    |> length()
   end
 
   defp parse(input) do
@@ -35,5 +39,22 @@ defmodule Task1 do
     |> Tuple.to_list()
     |> Enum.map(fn x -> Enum.reverse(x) end)
     |> List.to_tuple()
+  end
+
+  defp merge_overlaps(intervals) do
+    Enum.sort(intervals)
+    |> Enum.reduce([], fn
+      {l, r}, [{last_l, last_r} | prev] ->
+        cond do
+          l >= last_l and l <= last_r ->
+            [{min(l, last_l), max(r, last_r)} | prev]
+
+          true ->
+            [{l, r}, {last_l, last_r}] ++ prev
+        end
+
+      {l, r}, [] ->
+        [{l, r}]
+    end)
   end
 end
