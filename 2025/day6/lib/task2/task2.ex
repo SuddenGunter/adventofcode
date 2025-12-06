@@ -36,11 +36,18 @@ defmodule Task2 do
         op_row =
           Enum.take(x, len)
           |> Enum.map(fn
-            " " -> 0
+            " " -> :nan
             num -> parse_int!(num)
           end)
 
-        next_acc = Enum.zip_with([acc, op_row], fn [l, r] -> l * 10 + r end)
+        next_acc =
+          Enum.zip_with(
+            [acc, op_row],
+            fn
+              [l, :nan] -> l
+              [l, r] -> l * 10 + r
+            end
+          )
 
         {Enum.drop(x, len + 1), next_acc}
       end)
