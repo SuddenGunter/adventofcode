@@ -1,4 +1,4 @@
-defmodule Task2 do
+defmodule Task2Naive do
   @spec solution(String.t()) :: integer()
   def solution(input) do
     parse(input)
@@ -25,11 +25,11 @@ defmodule Task2 do
   end
 
   defp first_beam([[{:start, {x, y}}] | tail]) do
-    {tail, [{{x + 1, y}, 1}], 0}
+    {tail, [{x + 1, y}], 0}
   end
 
   defp project_beam({[], beams, total_splits}) do
-    total_splits + 1
+    length(beams)
   end
 
   defp project_beam({[[] | tail_cmds], beams, total_splits}) do
@@ -37,24 +37,32 @@ defmodule Task2 do
   end
 
   defp project_beam({[row_cmds | tail_cmds], beams, total_splits}) do
+    IO.inspect(%{
+      row_cmds: row_cmds,
+      le: length(beams)
+    })
+
     {projected_beams, new_splits} =
       Enum.reduce(row_cmds, {beams, total_splits}, fn {:splitter, {x, y} = splitter_pos},
                                                       {acc_beams, acc_splits} ->
-        hit_splitter =
-          Enum.filter(acc_beams, fn {beam_pos, _beam_count} -> beam_pos == splitter_pos end)
+        hit_splitter = Enum.filter(acc_beams, fn beam_pos -> beam_pos == splitter_pos end)
 
-        case hit_splitter do
-          [{_, beam_count}] ->
-            {([{{x, y - 1}, beam_count}, {{x, y + 1}, beam_count}] ++ acc_beams)
+        cond do
+          length(hit_splitter) > 0 ->
+            new_beams =
+              List.duplicate([{x, y - 1}, {x, y + 1}], length(hit_splitter))
+              |> Enum.flat_map(fn x -> x end)
+
+            {(new_beams ++ acc_beams)
              |> Enum.filter(fn
-               {beam_pos, _count} when beam_pos == splitter_pos ->
+               beam_pos when beam_pos == splitter_pos ->
                  false
 
                _ ->
                  true
-             end), acc_splits + beam_count}
+             end), acc_splits + 1}
 
-          [] ->
+          length(hit_splitter) == 0 ->
             {acc_beams, acc_splits}
         end
       end)
@@ -62,14 +70,11 @@ defmodule Task2 do
     project_beam(
       {tail_cmds,
        projected_beams
-       |> Enum.group_by(fn {pos, _c} -> pos end, fn {_pos, c} -> c end)
-       |> Map.to_list()
-       |> Enum.map(fn {pos, c} -> {pos, Enum.sum(c)} end)
        |> project_beams_to_next_row(), new_splits}
     )
   end
 
   defp project_beams_to_next_row(beams) do
-    Enum.map(beams, fn {{x, y}, count} -> {{x + 1, y}, count} end)
+    Enum.map(beams, fn {x, y} -> {x + 1, y} end)
   end
 end
