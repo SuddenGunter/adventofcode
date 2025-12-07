@@ -28,7 +28,7 @@ defmodule Task2 do
     {tail, [{{x + 1, y}, 1}], 0}
   end
 
-  defp project_beam({[], beams, total_splits}) do
+  defp project_beam({[], _beams, total_splits}) do
     total_splits + 1
   end
 

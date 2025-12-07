@@ -28,7 +28,7 @@ defmodule Task2Naive do
     {tail, [{x + 1, y}], 0}
   end
 
-  defp project_beam({[], beams, total_splits}) do
+  defp project_beam({[], beams, _total_splits}) do
     length(beams)
   end
 
