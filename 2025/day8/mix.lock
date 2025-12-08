@@ -1,0 +1,4 @@
+%{
+  "collections": {:git, "https://github.com/stackcats/collections", "8adde0e5f9c509f4441d6ebd20a6d912394a74db", [tag: "main"]},
+  "heap": {:hex, :heap, "3.0.0", "c6dbcd6e9a0b021432176e89cfd829dd065bd6c115981fdcd981a4251fff5fde", [:mix], [], "hexpm", "373eaca5787e2a2b009c42338e70414f590ceabcf96cfc786627ed762ad4dfc6"},
+}
