@@ -3,26 +3,33 @@ defmodule Task2 do
   @spec solution(String.t()) :: integer()
   def solution(input) do
     boxes = parse(input)
+
     distances_heap(boxes)
-
-    disjoint_set_with_all_boxes(boxes)
-
-    0
+    |> connect(DisjointSet.new(), boxes)
   end
 
-  defp disjoint_set_with_all_boxes(boxes) do
-    Enum.reduce(boxes, DisjointSet.new(), fn x, acc ->
-      DisjointSet.find(acc, x)
-    end)
-  end
-
-  defp connect(_heap, set, 0) do
-    set
-  end
-
-  defp connect(heap, set, num) do
+  defp connect(heap, set, all_nodes) do
     {_, from, to} = Heap.root(heap)
-    connect(Heap.pop(heap), DisjointSet.union(set, from, to), num - 1)
+    new_heap = Heap.pop(heap)
+    new_set = DisjointSet.union(set, from, to)
+
+    {root, _} = Collections.DisjointSet.find(new_set, hd(all_nodes))
+
+    all_connected? =
+      Enum.all?(all_nodes, fn x ->
+        {x_root, _} = Collections.DisjointSet.find(new_set, x)
+        x_root == root
+      end)
+
+    case all_connected? do
+      true ->
+        {from_x, _, _} = from
+        {to_x, _, _} = to
+        from_x * to_x
+
+      false ->
+        connect(new_heap, new_set, all_nodes)
+    end
   end
 
   defp distances_heap(connections) do
