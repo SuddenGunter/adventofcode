@@ -3,7 +3,7 @@
 [Advent of code](https://adventofcode.com/) solutions.
 
 ## 2025
-6 stars
+18 stars
 
 Languages: Elixir
 
